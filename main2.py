@@ -42,14 +42,17 @@ class Player(pygame.sprite.Sprite):
         if pressed_keys[K_RIGHT]:
             self.image = self.imageright
     def move(self):
+        #controller
+        #gravity
         self.acc = vec(0,0.5)
-    
+        #storing pressed keys
         pressed_keys = pygame.key.get_pressed()
-                
+        #tells the computer to move when keys are pressed  
         if pressed_keys[K_LEFT]:
             self.acc.x = -ACC
         if pressed_keys[K_RIGHT]:
             self.acc.x = ACC 
+        #makes friction and stuff happen
         self.acc.x += self.vel.x * FRIC
         self.vel += self.acc
         self.pos += self.vel + 0.5 * self.acc
