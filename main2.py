@@ -6,7 +6,7 @@ from pygame.locals import *
  
 pygame.init()
 vec = pygame.math.Vector2  # 2 for two dimensional
- 
+#setting constants like screensize and physics stuff 
 HEIGHT = 208
 WIDTH = 320
 ACC = 0.5
@@ -56,20 +56,22 @@ class Player(pygame.sprite.Sprite):
         self.acc.x += self.vel.x * FRIC
         self.vel += self.acc
         self.pos += self.vel + 0.5 * self.acc
+        #makes it so you cant jump off the platform
         if self.pos.x < 4: 
             self.pos.x = 4
             self.vel.x = 0
+    
         if self.pos.x > WIDTH - 4:
             self.pos.x = WIDTH - 4
             self.vel.x = 0
         self.rect.midbottom = self.pos
     def update(self):
+        #makes it so you dont fall through the floor
         hits = pygame.sprite.spritecollide(P1 , platforms, False)
         interactable_hits = pygame.sprite.spritecollide(P1, interactables, False)
-        if P1.vel.y > 0:        
-            if hits:
-                self.vel.y = 0
-                self.pos.y = hits[0].rect.top + 1
+        if P1.vel.y > 0 and hits:
+            self.vel.y = 0
+            self.pos.y = hits[0].rect.top + 1
         """
         if interactable_hits:
             for chest in interactable_hits:
@@ -92,7 +94,9 @@ class build(pygame.sprite.Sprite):
     def __init__(self,image,position,size):
         super().__init__()
         img = pygame.image.load(image).convert_alpha()
+        #size
         self.image = pygame.transform.scale(img, (blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])))
+        #position
         self.rect = self.image.get_rect(bottomleft = (blocks_to_pixels.blocks_to_pixels(position[0]),blocks_to_pixels.blocks_to_pixels(position[1])))
         self.visible = True
 
@@ -131,6 +135,7 @@ class interactable(pygame.sprite.Sprite):
 
 VILLAGEHOUSE = build("Village House.png",(10,12),(7,7))
 GRASS = platform("platform_grass.png")
+CAVE_ENTRANCE = platform("platform_cave_entrance.png")
 P1 = Player((1,2))
 CHEST = interactable("chest_front.png",(17,12),(1,1))
 IRON_PICKAXE = item("iron_pickaxe.png",(18,12),(1,1))
@@ -140,6 +145,7 @@ interactables = pygame.sprite.Group()
 items = pygame.sprite.Group()
 builds.add(VILLAGEHOUSE)
 platforms.add(GRASS)
+platforms.add(CAVE_ENTRANCE)
 interactables.add(CHEST)
 
 all_sprites = pygame.sprite.Group()
@@ -148,8 +154,10 @@ all_sprites.add(GRASS)
 all_sprites.add(P1)
 all_sprites.add(CHEST)
 all_sprites.add(IRON_PICKAXE)
+all_sprites.add(CAVE_ENTRANCE)
 
 while True:
+    #main game loop
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
@@ -157,16 +165,16 @@ while True:
         if event.type == pygame.KEYDOWN:    
             if event.key == pygame.K_SPACE:
                 P1.jump()
-    
+    #scrolling of screen
     scroll_x = P1.pos.x - (WIDTH / 2)
     displaysurface.blit(bg_image, (0, 0)) 
-
+    #draws all the sprites
     for entity in all_sprites:
         if entity.visible:
             draw_pos = (entity.rect.x - scroll_x, entity.rect.y)
             displaysurface.blit(entity.image, draw_pos)
         
-    
+    #every tick it checks these
     P1.move()
     P1.update()
     P1.change_image()
