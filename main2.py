@@ -167,6 +167,7 @@ while True:
     P1.move()
     P1.update()
     P1.change_image()
+    IRON_PICKAXE.pick_up()
     CHEST.interact(IRON_PICKAXE,"chest_front.png",(1,1))
     pygame.display.update()
     FramePerSec.tick(FPS)
