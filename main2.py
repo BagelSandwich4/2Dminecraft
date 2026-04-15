@@ -8,7 +8,9 @@ pygame.init()
 vec = pygame.math.Vector2  # 2 for two dimensional
 #setting constants like screensize and physics stuff 
 HEIGHT = 208
+HEIGHT_BLOCKS = 13
 WIDTH = 320
+WIDTH_BLOCKS = 20
 ACC = 0.5
 FRIC = -0.4
 FPS = 60
@@ -101,11 +103,11 @@ class build(pygame.sprite.Sprite):
         self.visible = True
 
 class platform(pygame.sprite.Sprite):
-    def __init__(self,image):
+    def __init__(self,image,position,size):
         super().__init__()
         img = pygame.image.load(image).convert_alpha()
-        self.image = pygame.transform.scale(img, (WIDTH, blocks_to_pixels.blocks_to_pixels(1)))
-        self.rect = self.image.get_rect(midbottom = (WIDTH/2,HEIGHT))
+        self.image = pygame.transform.scale(img, (blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])))
+        self.rect = self.image.get_rect(midbottom = (blocks_to_pixels.blocks_to_pixels(position[0]), blocks_to_pixels.blocks_to_pixels(position[1])))
         self.visible = True
 
 class item(pygame.sprite.Sprite):
@@ -134,8 +136,8 @@ class interactable(pygame.sprite.Sprite):
             drop.visible = True
 
 VILLAGEHOUSE = build("Village House.png",(10,12),(7,7))
-GRASS = platform("platform_grass.png")
-CAVE_ENTRANCE = platform("platform_cave_entrance.png")
+GRASS = platform("platform_grass.png",[WIDTH_BLOCKS/2,13],[WIDTH_BLOCKS, 1])
+CAVE_ENTRANCE = platform("platform_cave_entrance.png",[25,13],[10,5])
 P1 = Player((1,2))
 CHEST = interactable("chest_front.png",(17,12),(1,1))
 IRON_PICKAXE = item("iron_pickaxe.png",(18,12),(1,1))
