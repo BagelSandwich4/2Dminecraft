@@ -43,18 +43,22 @@ class Player(pygame.sprite.Sprite):
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.visible = True
+        self.grounded = False
         self.size = [blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])]
-        self.item_coords = [WIDTH/2 +2, blocks_to_pixels.blocks_to_pixels(10)+7]
+
     def change_image(self):
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_LEFT]:
             self.image = self.imageleft
         if pressed_keys[K_RIGHT]:
             self.image = self.imageright
-        if HOTBAR.selected != None:
-            self.item_coords = [WIDTH/2 +2, blocks_to_pixels.blocks_to_pixels(10)+7]
+
     def move(self):
         #controller
+        if not self.grounded:
+            self.acc = vec(0,.5)
+        else:
+            self.acc = vec(0,0)
         #gravity
         self.acc = vec(0,0.5)
         #storing pressed keys
@@ -87,36 +91,15 @@ class Player(pygame.sprite.Sprite):
         self.mask.set_at((self.surf.get_width()-1, self.surf.get_height()-1), 1)
     
     def update(self):
+        self.grounded = False
         #makes it so you dont fall through the floor
         for plat in platforms:
-            if self.vel.y > 0:
-                # 1. Calculate offset to check if we are touching the platform at all
-                offset_x = int(plat.pos[0] - self.pos.x)
-                offset_y = int(plat.pos[1] - self.pos.y)
-                
-                if self.mask.overlap(plat.mask, (offset_x, offset_y)):
-                    
-                    # 2. Find the EXACT pixel coordinate on the platform we hit
-                    plat_offset_x = int(self.pos.x - plat.pos[0])
-                    plat_offset_y = int(self.pos.y - plat.pos[1])
-                    plat_hit = plat.mask.overlap(self.mask, (plat_offset_x, plat_offset_y))
-                    
-                    if plat_hit:
-                        # plat_hit[1] is the local Y coordinate on the platform.
-                        # Add plat.pos[1] to get the absolute world Y coordinate of the floor.
-                        floor_y = plat.pos[1] + plat_hit[1]
-                        
-                        # 3. Only snap if the floor is below the upper section of the player.
-                        # This prevents the player from instantly climbing a vertical wall
-                        # when walking into it, but allows them to walk on lower floors inside a large image!
-                        if floor_y > self.pos.y + (self.image.get_height() * 0.25):
-                            self.pos.y = floor_y - self.image.get_height()
-                            self.vel.y = 0
-        '''
+            solid_mask(plat)
+        #makes it so you cant pass through the solid interacables 
         for temp_interactable in interactables:
-            if self.mask.overlap(temp_interactable.mask, [temp_interactable.pos[0]-self.pos.x, temp_interactable.pos[1]-self.pos.y]):
-                self.vel.y = 0
-        '''
+            if temp_interactable.solid == True:
+                solid_mask(temp_interactable)
+        
         """
         if interactable_hits:
             for chest in interactable_hits:
@@ -174,7 +157,7 @@ class hotbar(pygame.sprite.Sprite):
         
  
 class build(pygame.sprite.Sprite):
-    def __init__(self,image,position,size):
+    def __init__(self,image,position,size,reversed=False):
         '''
         Setting up an building sprite
         Inputs:
@@ -186,13 +169,15 @@ class build(pygame.sprite.Sprite):
         img = pygame.image.load(image).convert_alpha()
         #size
         self.image = pygame.transform.scale(img, (blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])))
+        if reversed == True:
+            self.image = pygame.transform.flip(self.image, True, False)
         #position
         self.pos = [blocks_to_pixels.blocks_to_pixels(position[0]),blocks_to_pixels.blocks_to_pixels(position[1])]
         self.mask = pygame.mask.from_surface(self.image)
         self.visible = True
 
 class platform(pygame.sprite.Sprite):
-    def __init__(self,image,position,size):
+    def __init__(self,image,position,size, reversed=False):
         '''
         Setting up an platform sprite
         Inputs:
@@ -203,13 +188,15 @@ class platform(pygame.sprite.Sprite):
         super().__init__()
         img = pygame.image.load(image).convert_alpha()
         self.image = pygame.transform.scale(img, (blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])))
+        if reversed == True:
+            self.image = pygame.transform.flip(self.image, True, False)
         self.mask = pygame.mask.from_surface(self.image)
         self.pos = [blocks_to_pixels.blocks_to_pixels(position[0]),blocks_to_pixels.blocks_to_pixels(position[1])]
         self.size = [blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])]
         self.visible = True
 
 class item(pygame.sprite.Sprite):
-    def __init__(self,image,position,size):
+    def __init__(self,image,position,size,reversed=False):
         '''
         Setting up an item sprite
         Inputs:
@@ -219,31 +206,47 @@ class item(pygame.sprite.Sprite):
         '''
         super().__init__()
         img = pygame.image.load(image).convert_alpha()
-        self.image = pygame.transform.scale(img, (blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])))
+        self.image_normal = pygame.transform.scale(img, (blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])))
+        self.image = self.image_normal
+        if reversed == True:
+            self.image = pygame.transform.flip(self.image_normal, True, False)
         self.pos = [blocks_to_pixels.blocks_to_pixels(position[0]),blocks_to_pixels.blocks_to_pixels(position[1])]
         self.mask = pygame.mask.from_surface(self.image)
         self.visible = False
+        self.image_reversed = pygame.transform.flip(self.image_normal, True, False)
+        self.hold_coords = [WIDTH/2 +2, P1.pos.y+ 6]
     def pick_up(self):
         for temp_item in items:
             if self.mask.overlap(P1.mask, [temp_item.pos[0]-P1.pos.x, temp_item.pos[1]-P1.pos.y]):
                 HOTBAR.pick_up_item(temp_item)
                 self.visible = False
-                
-        
+    def holding_item(self):
+        if HOTBAR.selected != None:
+            if P1.image == P1.imageright:
+                self.hold_coords = [WIDTH/2 +2, P1.pos.y+ 6] 
+                self.image = self.image_normal
+            else:
+                self.hold_coords = [WIDTH/2 -10, P1.pos.y+ 6]
+                self.image = self.image_reversed
+
 class interactable(pygame.sprite.Sprite):
-    def __init__(self,image,position,size):
+    def __init__(self,image,position,size, solid,reversed=False):
         '''
         Setting up an interactable sprite
         Inputs:
             image - a string representing the path to the .png file
             position - a tuple representing the x and y coordinates of the sprite in blocks (32 pixels = 1 block)
             size - size of the .png uploaded
+            solid - boolean logic telling whether the player can pass through the interactable
         '''
         super().__init__()
         img = pygame.image.load(image).convert_alpha()
         self.image = pygame.transform.scale(img, (blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])))
+        if reversed == True:
+            self.image = pygame.transform.flip(self.image, True, False)
         self.mask = pygame.mask.from_surface(self.image)
         self.visible = True
+        self.solid = solid
         self.pos = [blocks_to_pixels.blocks_to_pixels(position[0]),blocks_to_pixels.blocks_to_pixels(position[1])]
     def interact(self,drop,newimage,size):
         if self.mask.overlap(P1.mask, [self.pos[0]-P1.pos.x, self.pos[1]-P1.pos.y]):
@@ -261,15 +264,48 @@ def display_mask(sprite):
     draw_pos = (sprite.pos[0] - scroll_x, sprite.pos[1])
     displaysurface.blit(mask_surface, draw_pos)
 
+def solid_mask(instance):
+    '''
+    Turns collisions on for any entity so you cant pas through the sprite
+    Inputs:
+        instance: class instance of the entity
+    '''
+    if P1.vel.y > 0:
+        # 1. Calculate offset to check if we are touching the platform at all
+        offset_x = int(instance.pos[0] - P1.pos.x)
+        offset_y = int(instance.pos[1] - P1.pos.y)
+                
+        if P1.mask.overlap(instance.mask, (offset_x, offset_y)):
+                    
+            # 2. Find the EXACT pixel coordinate on the platform we hit
+            instance_offset_x = int(P1.pos.x - instance.pos[0])
+            instance_offset_y = int(P1.pos.y - instance.pos[1])
+            instance_hit = instance.mask.overlap(P1.mask, (instance_offset_x, instance_offset_y))
+                    
+            if instance_hit:
+                # plat_hit[1] is the local Y coordinate on the platform.
+                # Add plat.pos[1] to get the absolute world Y coordinate of the floor.
+                floor_y = instance.pos[1] + instance_hit[1]
+                        
+                # 3. Only snap if the floor is below the upper section of the player.
+                # This prevents the player from instantly climbing a vertical wall
+                # when walking into it, but allows them to walk on lower floors inside a large image!
+                if floor_y > P1.pos.y + (P1.image.get_height() * 0.25):
+                    P1.pos.y = floor_y - P1.image.get_height()
+                    P1.vel.y = 0
+                    P1.grounded = True
 
 #placement of entities
 VILLAGEHOUSE = build("other_sprites\\Village House.png",(10,5),(7,7))
-MOUNTAIN = build("backgrounds\\background_cave_entrance.png", (15,0),(20,13))
+MOUNTAIN_LEFT = build("backgrounds\\background_cave_entrance.png", (15,0),(20,13))
+MOUNTAIN_RIGHT = build("backgrounds\\background_cave_entrance.png", (35,0), (20,13), reversed=True)
+CAVE_BACKGROUND = build("backgrounds\\cave_background.png",(27,13), (20,13) )
 GRASS = platform("platforms\\platform_grass.png",(0,12),(WIDTH_BLOCKS, 1))
 CAVE_ENTRANCE = platform("platforms\\platform_cave_entrance.png",(20,3),(10,13))
 CAVE_CONT = platform("platforms\\platform_cave_entrance.png",(27,6),(10,13))
 P1 = Player((1,2))
-CHEST = interactable("other_sprites\\chest_front.png",(17,11),(1,1))
+CHEST = interactable("other_sprites\\chest_front.png",(17,11),(1,1), False)
+DIAMOND_ORE = interactable("blocks\\diamond_ore.png", (36,17), (1,1), True) 
 IRON_PICKAXE = item("items\\iron_pickaxe.png",(18,11),(1,1))
 DIAMOND = item("items\\diamond.png",(20,11),(1,1))
 HOTBAR = hotbar("other_sprites\\hotbar.png", "other_sprites\\selected_hotbar_slot.png", (WIDTH/3.3, HEIGHT-15), [135,16])
@@ -285,22 +321,28 @@ all_ui = pygame.sprite.Group()
 
 #adding them to the groups
 builds.add(VILLAGEHOUSE)
-builds.add(MOUNTAIN)
+builds.add(MOUNTAIN_LEFT)
+builds.add(MOUNTAIN_RIGHT)
+builds.add(CAVE_BACKGROUND)
 platforms.add(GRASS)
 platforms.add(CAVE_ENTRANCE)
 platforms.add(CAVE_CONT)
 interactables.add(CHEST)
+interactables.add(DIAMOND_ORE)
 items.add(DIAMOND)
 items.add(IRON_PICKAXE)
 all_sprites.add(VILLAGEHOUSE)
+all_sprites.add(CAVE_BACKGROUND)
 all_sprites.add(GRASS)
-all_sprites.add(MOUNTAIN)
+all_sprites.add(MOUNTAIN_LEFT)
+all_sprites.add(MOUNTAIN_RIGHT)
 all_sprites.add(P1)
 all_sprites.add(CHEST)
 all_sprites.add(IRON_PICKAXE)
 all_sprites.add(CAVE_CONT)
 all_sprites.add(CAVE_ENTRANCE)
 all_sprites.add(DIAMOND)
+all_sprites.add(DIAMOND_ORE)
 all_ui.add(HOTBAR)
 
 while True:
@@ -323,7 +365,7 @@ while True:
     for entity in all_sprites:
         if entity.visible:
             draw_pos = (entity.pos[0] - scroll_x, entity.pos[1] - scroll_y)
-            displaysurface.blit(entity.image, draw_pos)
+            displaysurface.blit(entity.image, (int(draw_pos[0]), int(draw_pos[1])))
     
     #ensures hotbar stays in the same place while moving
     draw_pos = (HOTBAR.pos[0], HOTBAR.pos[1])
@@ -334,10 +376,15 @@ while True:
     for i in range(9):
         slot = HOTBAR.hotbar[i]
         if slot != None:
+            #slot - instance of the item in position i
+            # i - slot index of instance 
+            #drawing items in hotbar
             draw_pos = [HOTBAR.x_positions[i], HOTBAR.pos[1]]
-            displaysurface.blit(slot.image, draw_pos)
+            displaysurface.blit(slot.image_normal, draw_pos)
+            #making steve hold the item
             if i+1 == HOTBAR.selected_slot:
-                displaysurface.blit(slot.image, P1.item_coords)
+                slot.holding_item()
+                displaysurface.blit(slot.image, slot.hold_coords)
     
     #code for displaying masks just change the sprite and it will display in red
     #display_mask(DIAMOND)
