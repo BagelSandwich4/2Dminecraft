@@ -44,13 +44,15 @@ class Player(pygame.sprite.Sprite):
         self.acc = vec(0,0)
         self.visible = True
         self.size = [blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])]
-        self.hotbar = ["","","","","","","","",""] #21 180
+        self.item_coords = [WIDTH/2 +2, blocks_to_pixels.blocks_to_pixels(10)+7]
     def change_image(self):
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_LEFT]:
             self.image = self.imageleft
         if pressed_keys[K_RIGHT]:
             self.image = self.imageright
+        if HOTBAR.selected != None:
+            self.item_coords = [WIDTH/2 +2, blocks_to_pixels.blocks_to_pixels(10)+7]
     def move(self):
         #controller
         #gravity
@@ -157,8 +159,9 @@ class hotbar(pygame.sprite.Sprite):
         self.pos = [position[0],position[1]]
         self.mask = pygame.mask.from_surface(self.image)
         self.visible = True 
-        self.selected = 1
+        self.selected_slot = 1
         self.hotbar = [IRON_PICKAXE,None,None,None,None,IRON_PICKAXE,None,None,None]
+        self.selected = self.hotbar[0]
         self.x_positions = [WIDTH/3.3, WIDTH/3.3+ 15, WIDTH/3.3 +15*2, WIDTH/3.3 +15*3, WIDTH/3.3 +15*4 , WIDTH/3.3 +15*6 , WIDTH/3.3 +15*7 , WIDTH/3.3 +15*8]
         self.selected_coordinates = [self.x_positions[0], self.pos[1]]
     def change_selected(self,new_selected):
@@ -333,9 +336,8 @@ while True:
         if slot != None:
             draw_pos = [HOTBAR.x_positions[i], HOTBAR.pos[1]]
             displaysurface.blit(slot.image, draw_pos)
-        if i+1 == HOTBAR.selected_slot:
-            draw_pos = P1.pos
-            displaysurface.blit(slot.image, draw_pos)
+            if i+1 == HOTBAR.selected_slot:
+                displaysurface.blit(slot.image, P1.item_coords)
     
     #code for displaying masks just change the sprite and it will display in red
     #display_mask(DIAMOND)
