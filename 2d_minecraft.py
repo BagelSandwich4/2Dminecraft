@@ -155,7 +155,6 @@ class hotbar(pygame.sprite.Sprite):
         if self.selected == None:
             self.hotbar[self.selected_slot-1] = item
         
- 
 class build(pygame.sprite.Sprite):
     def __init__(self,image,position,size,reversed=False):
         '''
@@ -249,10 +248,14 @@ class interactable(pygame.sprite.Sprite):
         self.solid = solid
         self.pos = [blocks_to_pixels.blocks_to_pixels(position[0]),blocks_to_pixels.blocks_to_pixels(position[1])]
     def interact(self,drop,newimage,size):
-        if self.mask.overlap(P1.mask, [self.pos[0]-P1.pos.x, self.pos[1]-P1.pos.y]):
+        if newimage != None and self.mask.overlap(P1.mask, [self.pos[0]-P1.pos.x, self.pos[1]-P1.pos.y]):
             img = pygame.image.load(newimage).convert_alpha()
             self.image = pygame.transform.scale(img, (blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])))
             drop.visible = True
+        elif newimage == None and self.mask.overlap(P1.mask, [self.pos[0]-P1.pos.x -1, self.pos[1]-P1.pos.y+1]):
+            self.visible = False
+            drop.visivle = True
+            self.solid = False
 def display_mask(sprite):
     '''
     Displays the mask of a given sprite for debugging
@@ -307,7 +310,7 @@ P1 = Player((1,2))
 CHEST = interactable("other_sprites\\chest_front.png",(17,11),(1,1), False)
 DIAMOND_ORE = interactable("blocks\\diamond_ore.png", (36,17), (1,1), True) 
 IRON_PICKAXE = item("items\\iron_pickaxe.png",(18,11),(1,1))
-DIAMOND = item("items\\diamond.png",(20,11),(1,1))
+DIAMOND = item("items\\diamond.png",(35,17),(1,1))
 HOTBAR = hotbar("other_sprites\\hotbar.png", "other_sprites\\selected_hotbar_slot.png", (WIDTH/3.3, HEIGHT-15), [135,16])
 #real size 180x21
 
@@ -397,6 +400,7 @@ while True:
     CHEST.interact(IRON_PICKAXE,"other_sprites\\chest_front.png",(1,1))
     pygame.display.update()
     FramePerSec.tick(FPS)
+    CHEST.interact(DIAMOND,None,(1,1))
 
 '''
     for sprite in all_sprites:
