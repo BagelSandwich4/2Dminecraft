@@ -47,6 +47,9 @@ class Player(pygame.sprite.Sprite):
         self.size = [blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])]
 
     def change_image(self):
+        '''
+        Changes the image of steve from left to right view when moving left or right.
+        '''
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_LEFT]:
             self.image = self.imageleft
@@ -54,6 +57,9 @@ class Player(pygame.sprite.Sprite):
             self.image = self.imageright
 
     def move(self):
+        '''
+        This is the controller. It tells the model what to do when someone presses a key
+        '''
         #controller
         if not self.grounded:
             self.acc = vec(0,.5)
@@ -91,6 +97,9 @@ class Player(pygame.sprite.Sprite):
         self.mask.set_at((self.surf.get_width()-1, self.surf.get_height()-1), 1)
     
     def update(self):
+        '''
+        This is the update method. It makes it so the player doesnt fall through the floor or pass through entities.
+        '''
         self.grounded = False
         #makes it so you dont fall through the floor
         for plat in platforms:
@@ -116,12 +125,18 @@ class Player(pygame.sprite.Sprite):
 
         
     def jump(self):
+        '''
+        This makes the player jump.
+        '''
         pressed_keys = pygame.key.get_pressed()
         for temp_platform in platforms:
             if self.mask.overlap(temp_platform.mask, [temp_platform.pos[0]-self.pos.x, temp_platform.pos[1]-self.pos.y-1]) and pressed_keys[K_SPACE]:
                 self.vel.y = -8.5
 
 class hotbar(pygame.sprite.Sprite):
+    '''
+    This is the hotbar class. It deals with the hotbar and storing the contents of it.
+    '''
     def __init__(self, image, selected_image, position, size):
         '''
         Setting up a hotbar
@@ -148,14 +163,25 @@ class hotbar(pygame.sprite.Sprite):
         self.x_positions = [WIDTH/3.3, WIDTH/3.3+ 15, WIDTH/3.3 +15*2, WIDTH/3.3 +15*3, WIDTH/3.3 +15*4 , WIDTH/3.3 +15*6 , WIDTH/3.3 +15*7 , WIDTH/3.3 +15*8]
         self.selected_coordinates = [self.x_positions[0], self.pos[1]]
     def change_selected(self,new_selected):
+        '''
+        This lets the instance know which slot is selected
+        '''
         self.selected_slot = new_selected
         self.selected_coordinates = [self.x_positions[self.selected_slot -1], self.pos[1]]
         self.selected = self.hotbar[self.selected_slot-1]
     def pick_up_item(self,item):
+        '''
+        This adds an item into the selected hotbar slot. 
+        Inputs:
+            item - an instance of the item class to be picked up
+        '''
         if self.selected == None:
             self.hotbar[self.selected_slot-1] = item
         
 class build(pygame.sprite.Sprite):
+    '''
+    This is used for creating sprites that you can pass through and are not interactable
+    '''
     def __init__(self,image,position,size,reversed=False):
         '''
         Setting up an building sprite
@@ -176,6 +202,9 @@ class build(pygame.sprite.Sprite):
         self.visible = True
 
 class platform(pygame.sprite.Sprite):
+    '''
+    This class creates the floor of the game
+    '''
     def __init__(self,image,position,size, reversed=False):
         '''
         Setting up an platform sprite
@@ -195,6 +224,9 @@ class platform(pygame.sprite.Sprite):
         self.visible = True
 
 class item(pygame.sprite.Sprite):
+    '''
+    This class creates interactable items that the player can hold and store in their hotbar.
+    '''
     def __init__(self,image,position,size,reversed=False):
         '''
         Setting up an item sprite
@@ -215,11 +247,17 @@ class item(pygame.sprite.Sprite):
         self.image_reversed = pygame.transform.flip(self.image_normal, True, False)
         self.hold_coords = [WIDTH/2 +2, P1.pos.y+ 6]
     def pick_up(self):
+        '''
+        This method is run if the player picks the item up. It is then stored in the players selected hotbar slot
+        '''
         for temp_item in items:
             if self.mask.overlap(P1.mask, [temp_item.pos[0]-P1.pos.x, temp_item.pos[1]-P1.pos.y]):
                 HOTBAR.pick_up_item(temp_item)
                 self.visible = False
     def holding_item(self):
+        '''
+        This determines if the item is selected and tells the view where to put the item on the player so it looks like steve is holding it.
+        '''
         if HOTBAR.selected != None:
             if P1.image == P1.imageright:
                 self.hold_coords = [WIDTH/2 +2, P1.pos.y+ 6] 
@@ -229,6 +267,9 @@ class item(pygame.sprite.Sprite):
                 self.image = self.image_reversed
 
 class interactable(pygame.sprite.Sprite):
+    '''
+    This class is for entities that are interactable like chests,mobs, and ore.
+    '''
     def __init__(self,image,position,size, solid,reversed=False):
         '''
         Setting up an interactable sprite
@@ -248,11 +289,18 @@ class interactable(pygame.sprite.Sprite):
         self.solid = solid
         self.pos = [blocks_to_pixels.blocks_to_pixels(position[0]),blocks_to_pixels.blocks_to_pixels(position[1])]
     def interact(self,drop,newimage,size):
+        '''
+        This method takes an interactable and makes the drop item visible and turns the interactable either into the newimage or invisible
+        Inputs:
+            drop - the instance of the item class that is being dropped by the interactable
+            newimage - a string representing the path to the png you wish to change the interatable to. Or None if you wish the iteractable to go away
+            size - a tuple representing the x and y size of the newimage in blocks
+        '''
         if newimage != None and self.mask.overlap(P1.mask, [self.pos[0]-P1.pos.x, self.pos[1]-P1.pos.y]):
             img = pygame.image.load(newimage).convert_alpha()
             self.image = pygame.transform.scale(img, (blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])))
             drop.visible = True
-        elif newimage == None and self.mask.overlap(P1.mask, [self.pos[0]-P1.pos.x -1, self.pos[1]-P1.pos.y+1]):
+        elif newimage == None and self.mask.overlap(P1.mask, [self.pos[0]-P1.pos.x , self.pos[1]-P1.pos.y]):
             self.visible = False
             drop.visivle = True
             self.solid = False
@@ -269,7 +317,7 @@ def display_mask(sprite):
 
 def solid_mask(instance):
     '''
-    Turns collisions on for any entity so you cant pas through the sprite
+    Turns collisions on for any entity so you cant pass through the sprite
     Inputs:
         instance: class instance of the entity
     '''
@@ -298,31 +346,44 @@ def solid_mask(instance):
                     P1.vel.y = 0
                     P1.grounded = True
 
-#placement of entities
+#creating instances of the classes for each sprite 
+
+#Build takes 3 or 4 inputs. build("string with path to image", (location), (size), optional(reversed=True))
 VILLAGEHOUSE = build("other_sprites\\Village House.png",(10,5),(7,7))
 MOUNTAIN_LEFT = build("backgrounds\\background_cave_entrance.png", (15,0),(20,13))
 MOUNTAIN_RIGHT = build("backgrounds\\background_cave_entrance.png", (35,0), (20,13), reversed=True)
 CAVE_BACKGROUND = build("backgrounds\\cave_background.png",(27,13), (20,13) )
+
+#Platform takes 3 inputs. build("string with path to image", (location), (size))
 GRASS = platform("platforms\\platform_grass.png",(0,12),(WIDTH_BLOCKS, 1))
 CAVE_ENTRANCE = platform("platforms\\platform_cave_entrance.png",(20,3),(10,13))
 CAVE_CONT = platform("platforms\\platform_cave_entrance.png",(27,6),(10,13))
+
+#Player takes one input. Player((size)
 P1 = Player((1,2))
+
+#Interactable takes 4 inputs. build("string with path to image", (location), (size), (whether or not you can pass through it))
 CHEST = interactable("other_sprites\\chest_front.png",(17,11),(1,1), False)
 DIAMOND_ORE = interactable("blocks\\diamond_ore.png", (36,17), (1,1), True) 
+
+#Item takes 3 inputs. build("string with path to image", (location), (size))
 IRON_PICKAXE = item("items\\iron_pickaxe.png",(18,11),(1,1))
 DIAMOND = item("items\\diamond.png",(35,17),(1,1))
+
+#Hotbar takes 4 inputs. build("string with path to image of whole hotbar", "string with path to image of selected hotbar slot",(location), (size))
 HOTBAR = hotbar("other_sprites\\hotbar.png", "other_sprites\\selected_hotbar_slot.png", (WIDTH/3.3, HEIGHT-15), [135,16])
 #real size 180x21
 
-#creating sprite groups
+#creating sprite groups by class
 builds = pygame.sprite.Group()
 platforms = pygame.sprite.Group()
 interactables = pygame.sprite.Group()
 items = pygame.sprite.Group()
-all_sprites = pygame.sprite.Group()
-all_ui = pygame.sprite.Group()
 
-#adding them to the groups
+#creating a group with every sprite
+all_sprites = pygame.sprite.Group()
+
+#adding each instance of to the groups
 builds.add(VILLAGEHOUSE)
 builds.add(MOUNTAIN_LEFT)
 builds.add(MOUNTAIN_RIGHT)
@@ -334,6 +395,8 @@ interactables.add(CHEST)
 interactables.add(DIAMOND_ORE)
 items.add(DIAMOND)
 items.add(IRON_PICKAXE)
+
+#adding every instance to all_sprites
 all_sprites.add(VILLAGEHOUSE)
 all_sprites.add(CAVE_BACKGROUND)
 all_sprites.add(GRASS)
@@ -346,7 +409,7 @@ all_sprites.add(CAVE_CONT)
 all_sprites.add(CAVE_ENTRANCE)
 all_sprites.add(DIAMOND)
 all_sprites.add(DIAMOND_ORE)
-all_ui.add(HOTBAR)
+
 
 while True:
     #main game loop
