@@ -459,6 +459,7 @@ while True:
     #display_mask(DIAMOND)
 
     #every tick it checks these
+    display_mask(P1)
     P1.move()
     P1.update()
     P1.change_image()
