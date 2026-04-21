@@ -43,7 +43,11 @@ class Player(pygame.sprite.Sprite):
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.visible = True
-        self.grounded = False
+        try:
+            self.grounded = self.grounded
+        except AttributeError:
+            self.grounded = False
+
         self.size = [blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])]
 
     def change_image(self):
@@ -61,12 +65,11 @@ class Player(pygame.sprite.Sprite):
         This is the controller. It tells the model what to do when someone presses a key
         '''
         #controller
+        #gravity
         if not self.grounded:
             self.acc = vec(0,.5)
         else:
             self.acc = vec(0,0)
-        #gravity
-        self.acc = vec(0,0.5)
         #storing pressed keys
         pressed_keys = pygame.key.get_pressed()
         number_keys = [K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9]
