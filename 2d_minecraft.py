@@ -33,10 +33,10 @@ class Player(pygame.sprite.Sprite):
         super().__init__() 
         self.surf = pygame.Surface((8, 31))
         self.surf.fill((128,255,40))
-        steve_right = pygame.image.load("player\\Steve_Right.png").convert_alpha()
+        steve_right = pygame.image.load("player sprites\\Steve_Right.png").convert_alpha()
         self.imageright = pygame.transform.scale(steve_right, (8,31))
         self.image = self.imageright
-        steve_left = pygame.image.load("player\\Steve_Left.png").convert_alpha()
+        steve_left = pygame.image.load("player sprites\\Steve_Left.png").convert_alpha()
         self.imageleft = pygame.transform.scale(steve_left, (8,31))
         self.mask = pygame.mask.from_surface(self.image)
         self.pos = vec(75, 80)
@@ -161,9 +161,9 @@ class hotbar(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.visible = True 
         self.selected_slot = 1
-        self.hotbar = [IRON_PICKAXE,None,None,None,None,IRON_PICKAXE,None,None,None]
+        self.hotbar = [None,None,None,None,None,None,None,None,None]
         self.selected = self.hotbar[0]
-        self.x_positions = [WIDTH/3.3, WIDTH/3.3+ 15, WIDTH/3.3 +15*2, WIDTH/3.3 +15*3, WIDTH/3.3 +15*4 , WIDTH/3.3 +15*6 , WIDTH/3.3 +15*7 , WIDTH/3.3 +15*8]
+        self.x_positions = [WIDTH/3.3, WIDTH/3.3+ 15, WIDTH/3.3 +15*2, WIDTH/3.3 +15*3, WIDTH/3.3 +15*4, WIDTH/3.3*5, WIDTH/3.3 +15*6 , WIDTH/3.3 +15*7 , WIDTH/3.3 +15*8]
         self.selected_coordinates = [self.x_positions[0], self.pos[1]]
     def change_selected(self,new_selected):
         '''
