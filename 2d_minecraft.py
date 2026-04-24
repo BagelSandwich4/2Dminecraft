@@ -582,6 +582,7 @@ while True:
     #display_mask(DIAMOND)
 
     #every tick it checks these
+    """
     display_mask(P1)
     P1.move()
     P1.update()
@@ -591,6 +592,7 @@ while True:
     pygame.display.update()
     FramePerSec.tick(FPS)
     CHEST.interact(DIAMOND,None,(1,1))
+    """
 
 
 '''
