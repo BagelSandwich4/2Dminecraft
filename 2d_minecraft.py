@@ -577,13 +577,9 @@ while True:
                 draw_y = slot.hold_coords[1] - scroll_y
                 displaysurface.blit(slot.image, (int(draw_x), int(draw_y)))
 
-    
-    #code for displaying masks just change the sprite and it will display in red
-    #display_mask(DIAMOND)
 
     #every tick it checks these
     """
-    display_mask(P1)
     P1.move()
     P1.update()
     P1.change_image()
