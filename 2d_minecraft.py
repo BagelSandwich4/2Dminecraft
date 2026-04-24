@@ -581,6 +581,16 @@ while True:
     #code for displaying masks just change the sprite and it will display in red
     #display_mask(DIAMOND)
 
+    #every tick it checks these
+    display_mask(P1)
+    P1.move()
+    P1.update()
+    P1.change_image()
+    IRON_PICKAXE.pick_up()
+    CHEST.interact(IRON_PICKAXE,"other_sprites\\chest_front.png",(1,1))
+    pygame.display.update()
+    FramePerSec.tick(FPS)
+    CHEST.interact(DIAMOND,None,(1,1))
 
 
 '''
