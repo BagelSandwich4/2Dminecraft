@@ -46,66 +46,68 @@ class player(pygame.sprite.Sprite):
         steve_right = pygame.image.load("sprites\\player sprites\\Steve_Right.png").convert_alpha()
         self.imageright = pygame.transform.scale(steve_right, (8,31))
         self.image = self.imageright
+        #loading steves left side image
         steve_left = pygame.image.load("sprites\\player sprites\\Steve_Left.png").convert_alpha()
         self.imageleft = pygame.transform.scale(steve_left, (8,31))
+        #creating steves mask which determines whether he is overlapping other sprites
         self.mask = pygame.mask.from_surface(self.image)
+        #setting the players initial position
         self.pos = vec(75, 80)
+        #setting the players initial velocity
         self.vel = vec(0,0)
+        #setting the players initial acceleration
         self.acc = vec(0,0)
+        #setting the players to visible
         self.visible = True
+        #determining whether steve is touching a platform
         try:
             self.grounded = self.grounded
         except AttributeError:
             self.grounded = False
-
+        #setting size as an attribute
         self.size = [blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])]
 
     def change_image(self):
         '''
         Changes the image of steve from left to right view when moving left or right.
         '''
+        #showing which keys are pressed
         pressed_keys = pygame.key.get_pressed()
+        #changing image if he is going left
         if pressed_keys[K_LEFT]:
             self.image = self.imageleft
+        #changing image if he is going right
         if pressed_keys[K_RIGHT]:
             self.image = self.imageright
 
     def move(self):
         '''
-        This is the controller. It tells the model what to do when someone presses a key
+        This is the controller. It tells the model what to do when someone presses a key and controlls physics of the player
         '''
         #controller
-        #gravity
+        #constantly setting gravity as acceleration downwards
         if not self.grounded:
             self.acc = vec(0,.5)
         else:
             self.acc = vec(0,0)
         #storing pressed keys
         pressed_keys = pygame.key.get_pressed()
+        #storing the number keys pressed for use in the hotbar
         number_keys = [K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9]
-        #tells the computer to move when keys are pressed  
+        #tells the computer to move left and right when keys are pressed
         if pressed_keys[K_LEFT]:
             self.acc.x = -ACC
         if pressed_keys[K_RIGHT]:
             self.acc.x = ACC
-        #checks if they move which slot is selected
+        #checks if they press one of the numbers selected and telling the HOTBAR instance which one has been selected
         for key, i in zip(number_keys, range(1,10)):
             if pressed_keys[key]:
                 HOTBAR.change_selected(i)
-        #makes friction and stuff happen
+        #setting acceleration velocity and position using current and set values
         self.acc.x += self.vel.x * FRIC
         self.vel += self.acc
         self.pos += self.vel + 0.5 * self.acc
-        #makes it so you cant jump off the platform
-        '''
-        if self.pos.x < 4: 
-            self.pos.x = 4
-            self.vel.x = 0
-    
-        if self.pos.x > WIDTH - 4:
-            self.pos.x = WIDTH - 4
-            self.vel.x = 0
-        '''
+        #setting steves mask to be at the same position as the image of steve
         self.mask.set_at((0,0), 1)
         self.mask.set_at((self.surf.get_width()-1, self.surf.get_height()-1), 1)
     
@@ -113,8 +115,9 @@ class player(pygame.sprite.Sprite):
         '''
         This is the update method. It makes it so the player doesnt fall through the floor or pass through entities.
         '''
+        #sets the player to be touching the ground by default
         self.grounded = False
-        #makes it so you dont fall through the floor
+        #makes it so you dont fall through the floor by setting every platform to be solid
         for plat in platforms:
             solid_mask(plat, self)
         #makes it so you cant pass through the solid interacables 
@@ -126,9 +129,12 @@ class player(pygame.sprite.Sprite):
         '''
         This makes the player jump.
         '''
+        #reads which keys are pressed
         pressed_keys = pygame.key.get_pressed()
+        #ensures that the player is touching the platorm to start
         for temp_platform in platforms:
             if self.mask.overlap(temp_platform.mask, [temp_platform.pos[0]-self.pos.x, temp_platform.pos[1]-self.pos.y-1]) and pressed_keys[K_SPACE]:
+                #sets velocity upward
                 self.vel.y = -7.5
     def freeze(self):
         '''
@@ -150,20 +156,26 @@ class hotbar(pygame.sprite.Sprite):
             size - size of the .png uploaded in pixels
         '''
         super().__init__()
+        #loads the image
         img = pygame.image.load(image).convert_alpha()
         s_img = pygame.image.load(selected_image).convert_alpha()
-        #size
+        #sets the size of the image
         self.image = pygame.transform.scale(img, (size[0], size[1]))
         self.s_image = pygame.transform.scale(s_img, (size[1],size[1]))
-        #position
-        #position
+        #sets position of the sprite
         self.pos = [position[0],position[1]]
+        #creates mask
         self.mask = pygame.mask.from_surface(self.image)
+        #sets it to visible
         self.visible = True 
-        self.selected_slot = 1
+        #sets the hotbar to empty
         self.hotbar = [None,None,None,None,None,None,None,None,None]
+        #sets initial selected slot to the first one
+        self.selected_slot = 1
         self.selected = self.hotbar[0]
+        #sets the positions needed to change the image of the selected slot
         self.x_positions = [WIDTH/3.3, WIDTH/3.3+ 15, WIDTH/3.3 +15*2, WIDTH/3.3 +15*3, WIDTH/3.3 +15*4, WIDTH/3.3 + 15*5, WIDTH/3.3 +15*6 , WIDTH/3.3 +15*7 , WIDTH/3.3 +15*8]
+        #assigns attribute to the the selected slots position
         self.selected_coordinates = [self.x_positions[0], self.pos[1]]
     
     def change_selected(self,new_selected):
@@ -171,6 +183,7 @@ class hotbar(pygame.sprite.Sprite):
         This determines which slot is selected and changes certain varibles based on that
         '''
         self.selected_slot = new_selected
+        #changes position of selected slot
         self.selected_coordinates = [self.x_positions[self.selected_slot -1], self.pos[1]]
         self.selected = self.hotbar[self.selected_slot-1]
     def pick_up_item(self,item):
@@ -178,11 +191,17 @@ class hotbar(pygame.sprite.Sprite):
         This adds an item into the selected hotbar slot. 
         Inputs:
             item - an instance of the item class to be picked up
+        Returns:
+            True - boolean logic that says if the item was picked up
+            False - True - boolean logic that says if the item was not picked up
         '''
-        idx = self.selected_slot - 1
-        if self.hotbar[idx] is None:
-            self.hotbar[idx] = item
-            self.selected = self.hotbar[idx]
+        #sets index of current selected slot
+        i = self.selected_slot - 1
+        #checks that the slot is empty
+        if self.hotbar[i] is None:
+            #sets the slot to the item
+            self.hotbar[i] = item
+            self.selected = self.hotbar[i]
             return True
         return False
     def delete_item(self,item):
@@ -193,7 +212,9 @@ class hotbar(pygame.sprite.Sprite):
         '''
         for i in range(0,9):
             if self.hotbar[i]  == item:
+                #sets the slot to empty
                 self.hotbar[i] = None
+                #sets the deleted items slot to the current selected slot
                 self.selected = self.hotbar[i]
 
     def check_for_item(self,item):
@@ -223,14 +244,17 @@ class build(pygame.sprite.Sprite):
             size - size of the .png uploaded
         '''
         super().__init__()
+        #loads image item
         img = pygame.image.load(image).convert_alpha()
-        #size
+        #sets image to scale of item
         self.image = pygame.transform.scale(img, (blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])))
         if reversed == True:
             self.image = pygame.transform.flip(self.image, True, False)
-        #position
+        #sets position
         self.pos = [blocks_to_pixels.blocks_to_pixels(position[0]),blocks_to_pixels.blocks_to_pixels(position[1])]
+        #creates mask
         self.mask = pygame.mask.from_surface(self.image)
+        #sets it to visible
         self.visible = True
 class platform(pygame.sprite.Sprite):
     '''
@@ -245,13 +269,20 @@ class platform(pygame.sprite.Sprite):
             size - size of the .png uploaded
         '''
         super().__init__()
+        #loading the image
         img = pygame.image.load(image).convert_alpha()
+        #setting up the image according to size
         self.image = pygame.transform.scale(img, (blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])))
+        #flipping the image according to boolean reversed logic
         if reversed == True:
             self.image = pygame.transform.flip(self.image, True, False)
+        #setting up mask
         self.mask = pygame.mask.from_surface(self.image)
+        #setting positional attribute
         self.pos = [blocks_to_pixels.blocks_to_pixels(position[0]),blocks_to_pixels.blocks_to_pixels(position[1])]
+        #setting size attribute 
         self.size = [blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])]
+        #setting it to visible
         self.visible = True
 
 class item(pygame.sprite.Sprite):
@@ -267,15 +298,24 @@ class item(pygame.sprite.Sprite):
             size - size of the .png uploaded
         '''
         super().__init__()
+        #loading item image
         img = pygame.image.load(image).convert_alpha()
+        #setting image non-reversed
         self.image_normal = pygame.transform.scale(img, (blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])))
+        #setting current image
         self.image = self.image_normal
+        #flipping the image according to boolean logic
         if reversed == True:
             self.image = pygame.transform.flip(self.image_normal, True, False)
+        #setting positional attribute
         self.pos = [blocks_to_pixels.blocks_to_pixels(position[0]),blocks_to_pixels.blocks_to_pixels(position[1])]
+        #setting up mask
         self.mask = pygame.mask.from_surface(self.image)
+        #setting it to invisible by default
         self.visible = False
+        #storing the reversed image
         self.image_reversed = pygame.transform.flip(self.image_normal, True, False)
+        #initializing the coordinates where the image will be drawn for steve to hold it
         self.hold_coords = [P1.pos.x + 2, P1.pos.y + 6]
     def pick_up(self):
         '''
@@ -284,13 +324,14 @@ class item(pygame.sprite.Sprite):
         # Only attempt pickup if the item is in-world and has a mask
         if not self.visible:
             return
-
+        #if there isnt a mask make one
         if getattr(self, "mask", None) is None:
             self.mask = pygame.mask.from_surface(self.image)
-
+        #setting up offset to check overlap
         offset = (int(P1.pos.x - self.pos[0]), int(P1.pos.y - self.pos[1]))
-
+        #checking overlap
         if self.mask.overlap(P1.mask, offset):
+            #checking if the hotbar can take an item in the current state
             accepted = HOTBAR.pick_up_item(self)
             if accepted:
                 # hide the world item and clear its mask so it no longer collides or draws
@@ -302,10 +343,14 @@ class item(pygame.sprite.Sprite):
         This determines if the item is selected and tells the view where to put the item on the player so it looks like steve is holding it.
         '''
         if P1.image == P1.imageright:
+            #setting hold coordinates if steve is facing right 
             self.hold_coords = self.hold_coords = [P1.pos.x + 2, P1.pos.y + 6]
+            #setting the image to the normal image
             self.image = self.image_normal
         else:
+            #setting hold coordinates if steve is facing left
             self.hold_coords = self.hold_coords = [P1.pos.x - 10, P1.pos.y + 6]
+            #setting the image to the reversed image
             self.image = self.image_reversed
 
 class interactable(pygame.sprite.Sprite):
@@ -322,13 +367,20 @@ class interactable(pygame.sprite.Sprite):
             solid - boolean logic telling whether the player can pass through the interactable
         '''
         super().__init__()
+        #loading the image
         img = pygame.image.load(image).convert_alpha()
+        #assigning the image
         self.image = pygame.transform.scale(img, (blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])))
+        #reversing image in neccesary
         if reversed == True:
             self.image = pygame.transform.flip(self.image, True, False)
+        #setting up mask
         self.mask = pygame.mask.from_surface(self.image)
+        #setting it to visible
         self.visible = True
+        #setting it to not passable
         self.solid = solid
+        #setting position in pixels
         self.pos = [blocks_to_pixels.blocks_to_pixels(position[0]),blocks_to_pixels.blocks_to_pixels(position[1])]
     def interact(self,drop,newimage,size):
         '''
@@ -339,16 +391,24 @@ class interactable(pygame.sprite.Sprite):
             size - a tuple representing the x and y size of the newimage in blocks
         '''
         if newimage != None and self.mask.overlap(P1.mask, [int(P1.pos.x - self.pos[0]), int(P1.pos.y - self.pos[1])]):
+            #loading the new image
             img = pygame.image.load(newimage).convert_alpha()
+            #assigning the new image
             self.image = pygame.transform.scale(img, (blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])))
             if drop != None:
+                #setting the item the interactable drops to visible
                 drop.visible = True
+            #removing the mask so you cant interact with it again
             self.mask.clear()
         elif newimage == None and self.mask.overlap(P1.mask, [int(P1.pos.x - self.pos[0]), int(P1.pos.y - self.pos[1])]):
             if drop != None:
+                #setting the dropped item to visible
                 drop.visible = True
+            #setting the interactable to invisible
             self.visible = False
+            #making it no longer solid
             self.solid = False
+            #getting rid of its mask
             self.mask.clear()
     def craft(self,drop,cost):
         '''
@@ -359,11 +419,15 @@ class interactable(pygame.sprite.Sprite):
         '''
         if not isinstance(cost, (list, tuple)):
             cost = [cost]
+        #ensures the player is touching the crafting table
         if not self.mask.overlap(P1.mask, [self.pos[0]-P1.pos.x, self.pos[1]-P1.pos.y]):
             return
+        #checking for the item needed to craft
         if all(HOTBAR.check_for_item(item) for item in cost):
             for item in cost:
+                #deleting the item needed to craft
                 HOTBAR.delete_item(item)
+            #storing the crafted item in the hotbar
             HOTBAR.pick_up_item(drop)
 
 
@@ -592,9 +656,13 @@ while True:
                 draw_y = slot.hold_coords[1] - scroll_y
                 displaysurface.blit(slot.image, (int(draw_x), int(draw_y)))
 
+    
+    #code for displaying masks just change the sprite and it will display in red
+    #display_mask(DIAMOND)
 
     #every tick it checks these
     """
+    display_mask(P1)
     P1.move()
     P1.update()
     P1.change_image()
