@@ -3,27 +3,37 @@ import sys
 import random
 import blocks_to_pixels
 from pygame.locals import *
- 
+
 pygame.init()
 vec = pygame.math.Vector2  # 2 for two dimensional
-#setting constants like screensize and physics stuff 
+#setting constants
+#setting screensize
 HEIGHT = 208
 HEIGHT_BLOCKS = 13
 WIDTH = 320
 WIDTH_BLOCKS = 20
+#setting acceleration of the player as it moves
 ACC = 0.8
+#setting friction of the player as it moves
 FRIC = -0.4
+#setting frames per second
 FPS = 60
+# telling pygame to set the caption to Minecraft 2D
 pygame.display.set_caption("Minecraft 2D")
+# telling pygame to set the mouse to invisible
 pygame.mouse.set_visible(False)
+# telling pygame to set the clock
 FramePerSec = pygame.time.Clock()
- 
+#telling pygame we want to open a window with our set size
 displaysurface = pygame.display.set_mode((WIDTH, HEIGHT), pygame.SCALED | pygame.RESIZABLE)
-bg_image = pygame.image.load("backgrounds\\sky.png").convert()
+#setting the background of the game
+bg_image = pygame.image.load("sprites\\backgrounds\\sky.png").convert()
 bg_image = pygame.transform.scale(bg_image, (WIDTH, HEIGHT))
-pygame.display.set_caption("Game")
 
-class Player(pygame.sprite.Sprite):
+class player(pygame.sprite.Sprite):
+    '''
+    Class that determines everything to do with the player.
+    '''
     def __init__(self,size):
         '''
         Setting up the players sprite
@@ -33,10 +43,10 @@ class Player(pygame.sprite.Sprite):
         super().__init__() 
         self.surf = pygame.Surface((8, 31))
         self.surf.fill((128,255,40))
-        steve_right = pygame.image.load("player sprites\\Steve_Right.png").convert_alpha()
+        steve_right = pygame.image.load("sprites\\player sprites\\Steve_Right.png").convert_alpha()
         self.imageright = pygame.transform.scale(steve_right, (8,31))
         self.image = self.imageright
-        steve_left = pygame.image.load("player sprites\\Steve_Left.png").convert_alpha()
+        steve_left = pygame.image.load("sprites\\player sprites\\Steve_Left.png").convert_alpha()
         self.imageleft = pygame.transform.scale(steve_left, (8,31))
         self.mask = pygame.mask.from_surface(self.image)
         self.pos = vec(75, 80)
@@ -106,27 +116,12 @@ class Player(pygame.sprite.Sprite):
         self.grounded = False
         #makes it so you dont fall through the floor
         for plat in platforms:
-            solid_mask(plat)
+            solid_mask(plat, self)
         #makes it so you cant pass through the solid interacables 
         for temp_interactable in interactables:
             if temp_interactable.solid == True:
-                solid_mask(temp_interactable)
-        
-        """
-        if interactable_hits:
-            for chest in interactable_hits:
-                if self.vel.x > 0:
-                    self.pos.x = chest.mask.left - (self.mask.width / 2)
-                elif self.vel.x < 0:
-                    self.pos.x = chest.mask.right + (self.mask.width / 2)
-                
-                self.vel.x = 0
-                self.mask.set_at((0,0), 1)
-                self.mask.set_at((self.surf.get_width()-1, self.surf.get_height()-1), 1)
-        """
-        
+                solid_mask(temp_interactable,self)
 
-        
     def jump(self):
         '''
         This makes the player jump.
@@ -136,6 +131,9 @@ class Player(pygame.sprite.Sprite):
             if self.mask.overlap(temp_platform.mask, [temp_platform.pos[0]-self.pos.x, temp_platform.pos[1]-self.pos.y-1]) and pressed_keys[K_SPACE]:
                 self.vel.y = -7.5
     def freeze(self):
+        '''
+        This prevents the player from moving.
+        '''
         pygame.event.set_blocked([pygame.KEYDOWN, pygame.KEYUP])
 
 class hotbar(pygame.sprite.Sprite):
@@ -167,9 +165,10 @@ class hotbar(pygame.sprite.Sprite):
         self.selected = self.hotbar[0]
         self.x_positions = [WIDTH/3.3, WIDTH/3.3+ 15, WIDTH/3.3 +15*2, WIDTH/3.3 +15*3, WIDTH/3.3 +15*4, WIDTH/3.3 + 15*5, WIDTH/3.3 +15*6 , WIDTH/3.3 +15*7 , WIDTH/3.3 +15*8]
         self.selected_coordinates = [self.x_positions[0], self.pos[1]]
+    
     def change_selected(self,new_selected):
         '''
-        This lets the instance know which slot is selected
+        This determines which slot is selected and changes certain varibles based on that
         '''
         self.selected_slot = new_selected
         self.selected_coordinates = [self.x_positions[self.selected_slot -1], self.pos[1]]
@@ -187,11 +186,25 @@ class hotbar(pygame.sprite.Sprite):
             return True
         return False
     def delete_item(self,item):
+        '''
+        Removes an item stored in the hotbar
+        Inputs:
+            item: instance of the item class that is being deleted
+        '''
         for i in range(0,9):
             if self.hotbar[i]  == item:
                 self.hotbar[i] = None
                 self.selected = self.hotbar[i]
+
     def check_for_item(self,item):
+        '''
+        Checks the hotbar for a specifc item
+        Inputs:
+            item: instance of the item class that is being searched for
+        Returns:
+            True: Boolean logic if the item is being stored in the hotbar
+            False: Boolean logic if the item is not being stored in the hotbar
+        '''
         for i in range(0,9):
             if self.hotbar[i] == item:
                 return True
@@ -338,6 +351,12 @@ class interactable(pygame.sprite.Sprite):
             self.solid = False
             self.mask.clear()
     def craft(self,drop,cost):
+        '''
+        Determines how crafting function of crafting tables works
+        Inputs:
+            drop: instance of outputted item
+            cost: instance of required item to get drop
+        '''
         if not isinstance(cost, (list, tuple)):
             cost = [cost]
         if not self.mask.overlap(P1.mask, [self.pos[0]-P1.pos.x, self.pos[1]-P1.pos.y]):
@@ -348,23 +367,12 @@ class interactable(pygame.sprite.Sprite):
             HOTBAR.pick_up_item(drop)
 
 
-        
-def display_mask(sprite):
-    '''
-    Displays the mask of a given sprite for debugging
-    Inputs:
-        sprite - a class instance of any sprite
-    '''
-    sprite.visible = False
-    mask_surface = sprite.mask.to_surface(setcolor=(255, 0, 0, 255), unsetcolor=(0, 0, 0, 0))
-    draw_pos = (sprite.pos[0] - scroll_x, sprite.pos[1])
-    displaysurface.blit(mask_surface, draw_pos)
-
-def solid_mask(instance):
+def solid_mask(instance, P1):
     '''
     Turns collisions on for any entity so you cant pass through the sprite
     Inputs:
         instance: class instance of the entity
+        P1: instance of the Player class in 2d_minecraft
     '''
     if P1.vel.y > 0:
         # 1. Calculate offset to check if we are touching the platform at all
@@ -390,52 +398,61 @@ def solid_mask(instance):
                     P1.pos.y = floor_y - P1.image.get_height()
                     P1.vel.y = 0
                     P1.grounded = True
-
+def display_mask(sprite):
+    '''
+    Displays the mask of a given sprite for debugging
+    Inputs:
+        sprite - a class instance of any sprite
+    '''
+    sprite.visible = False
+    mask_surface = sprite.mask.to_surface(setcolor=(255, 0, 0, 255), unsetcolor=(0, 0, 0, 0))
+    draw_pos = (sprite.pos[0] - scroll_x, sprite.pos[1])
+    displaysurface.blit(mask_surface, draw_pos)
 #creating instances of the classes for each sprite 
 
 #Build takes 3 or 4 inputs. build("string with path to image", (location), (size), optional(reversed=True))
-VILLAGEHOUSE = build("other_sprites\\Village House.png",(10,5),(7,7))
-MOUNTAIN_LEFT = build("backgrounds\\background_cave_entrance.png", (15,0),(20,13))
-MOUNTAIN_RIGHT = build("backgrounds\\background_cave_entrance.png", (35,0), (20,13), reversed=True)
-CAVE_BACKGROUND = build("backgrounds\\cave_background.png",(27,13), (20,13))
-NETHER_PORTAL = build("other_sprites\\Netherportal_build.png",(43,13),(4,5))
-FORTRESS = build("backgrounds\\fort.png",(45,6),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
-STRONGHOLD = build("backgrounds\\fort.png",(59,6),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
-END = build("backgrounds\\fort.png",(73,6),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
+VILLAGEHOUSE = build("sprites\\other_sprites\\Village House.png",(10,5),(7,7))
+MOUNTAIN_LEFT = build("sprites\\backgrounds\\background_cave_entrance.png", (15,0),(20,13))
+MOUNTAIN_RIGHT = build("sprites\\backgrounds\\background_cave_entrance.png", (35,0), (20,13), reversed=True)
+CAVE_BACKGROUND = build("sprites\\backgrounds\\cave_background.png",(27,13), (20,13))
+NETHER_PORTAL = build("sprites\\other_sprites\\Netherportal_build.png",(43,13),(4,5))
+FORTRESS = build("sprites\\backgrounds\\fort.png",(45,6),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
+STRONGHOLD = build("sprites\\backgrounds\\fort.png",(59,6),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
+END = build("sprites\\backgrounds\\fort.png",(73,6),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
 
 #Platform takes 3 inputs. build("string with path to image", (location), (size))
-GRASS = platform("platforms\\platform_grass.png",(0,12),(WIDTH_BLOCKS, 1))
-CAVE_ENTRANCE = platform("platforms\\platform_cave_entrance.png",(20,3),(10,13))
-CAVE_CONT = platform("platforms\\platform_cave_entrance.png",(27,6),(10,13))
-CAVE_PLATFORM = platform("platforms\\cave_platform.png",(37,18),(WIDTH_BLOCKS,1))
-NETHER_PLATFORM = platform("platforms\\netehr_platform.png",(45,18),(WIDTH_BLOCKS,1))
-STRONGHOLD_PLATFORM = platform("platforms\\netehr_platform.png",(59,18),(WIDTH_BLOCKS,1))
-END_PLATFORM = platform("platforms\\netehr_platform.png",(73,18),(WIDTH_BLOCKS,1))
+GRASS = platform("sprites\\platforms\\platform_grass.png",(0,12),(WIDTH_BLOCKS, 1))
+CAVE_ENTRANCE = platform("sprites\\platforms\\platform_cave_entrance.png",(20,3),(10,13))
+CAVE_CONT = platform("sprites\\platforms\\platform_cave_entrance.png",(27,6),(10,13))
+CAVE_PLATFORM = platform("sprites\\platforms\\cave_platform.png",(37,18),(WIDTH_BLOCKS,1))
+NETHER_PLATFORM = platform("sprites\\platforms\\netehr_platform.png",(45,18),(WIDTH_BLOCKS,1))
+STRONGHOLD_PLATFORM = platform("sprites\\platforms\\netehr_platform.png",(59,18),(WIDTH_BLOCKS,1))
+END_PLATFORM = platform("sprites\\platforms\\netehr_platform.png",(73,18),(WIDTH_BLOCKS,1))
 
 #Player takes one input. Player((size)
-P1 = Player((1,2))
+P1 = player((1,2))
 
 #Interactable takes 4 inputs. build("string with path to image", (location), (size), (whether or not you can pass through it))
-CHEST = interactable("other_sprites\\chest_front.png",(17,11),(1,1), False)
-DIAMOND_ORE = interactable("blocks\\diamond_ore.png", (36,17), (1,1), True) 
-CRAFTING_TABLE = interactable("blocks\\crafting_table_side.png",(40,17),(1,1), False)
-BLAZE = interactable("other_sprites\\blaze.png",(51,14),(2,4),False)
-CHEST2 = interactable("other_sprites\\chest_front.png",(54,17),(1,1),False)
-CRAFTING_TABLE2 = interactable("blocks\\crafting_table_side.png",(57,17),(1,1),False)
-END_PORTAL = interactable("other_sprites\\end_portal.png",(63,17),(5,1),True)
-DRAGON = interactable("other_sprites\\dragon.png",(77,14),(16,6),False)
+CHEST = interactable("sprites\\other_sprites\\chest_front.png",(17,11),(1,1), False)
+DIAMOND_ORE = interactable("sprites\\blocks\\diamond_ore.png", (36,17), (1,1), True) 
+CRAFTING_TABLE = interactable("sprites\\blocks\\crafting_table_side.png",(40,17),(1,1), False)
+BLAZE = interactable("sprites\\other_sprites\\blaze.png",(51,14),(2,4),False)
+CHEST2 = interactable("sprites\\other_sprites\\chest_front.png",(54,17),(1,1),False)
+CRAFTING_TABLE2 = interactable("sprites\\blocks\\crafting_table_side.png",(57,17),(1,1),False)
+END_PORTAL = interactable("sprites\\other_sprites\\end_portal.png",(63,17),(5,1),True)
+DRAGON = interactable("sprites\\other_sprites\\dragon.png",(77,14),(16,6),False)
 
 #Item takes 3 inputs. build("string with path to image", (location), (size))
-IRON_PICKAXE = item("items\\iron_pickaxe.png",(18,11),(1,1))
-DIAMOND = item("items\\diamond.png",(35,17),(1,1))
-DIAMOND_SWORD = item("items\\diamond_sword.png",(41,17),(1,1))
-BLAZE_ROD = item("items\\blaze_rod.png",(51,17),(1,1))
-EYE_OF_ENDER = item('items\\ender_eye.png',(58,17),(1,1))
-PEARL = item("items\\ender_pearl.png",(55,17),(1,1))
-END_CREDIT = item("backgrounds\\end credit.png",(73,6),(640,22))
+IRON_PICKAXE = item("sprites\\items\\iron_pickaxe.png",(18,11),(1,1))
+DIAMOND = item("sprites\\items\\diamond.png",(35,17),(1,1))
+DIAMOND_SWORD = item("sprites\\items\\diamond_sword.png",(41,17),(1,1))
+BLAZE_ROD = item("sprites\\items\\blaze_rod.png",(51,17),(1,1))
+EYE_OF_ENDER = item('sprites\\items\\ender_eye.png',(58,17),(1,1))
+PEARL = item("sprites\\items\\ender_pearl.png",(55,17),(1,1))
+END_CREDIT = item("sprites\\backgrounds\\end credit.png",(73,6),(640,22))
 
 #Hotbar takes 4 inputs. build("string with path to image of whole hotbar", "string with path to image of selected hotbar slot",(location), (size))
-HOTBAR = hotbar("other_sprites\\hotbar.png", "other_sprites\\selected_hotbar_slot.png", (WIDTH/3.3, HEIGHT-15), [135,16])
+HOTBAR = hotbar("sprites\\other_sprites\\hotbar.png", "sprites\\other_sprites\\selected_hotbar_slot.png", (WIDTH/3.3, HEIGHT-15), [135,16])
 #real size 180x21
 
 #creating sprite groups by class
@@ -512,8 +529,6 @@ all_sprites.add(END_PORTAL)
 all_sprites.add(END_CREDIT)
 all_sprites.add(P1)
 
-
-
 while True:
 
     #main game loop
@@ -529,7 +544,7 @@ while True:
     P1.update()
     P1.change_image()
     IRON_PICKAXE.pick_up()
-    CHEST.interact(IRON_PICKAXE,"other_sprites\\chest_front.png",(1,1))
+    CHEST.interact(IRON_PICKAXE,"sprites\\other_sprites\\chest_front.png",(1,1))
     pygame.display.update()
     FramePerSec.tick(FPS)
     DIAMOND_ORE.interact(DIAMOND,None,(1,1))
@@ -541,7 +556,7 @@ while True:
     PEARL.pick_up()
     CRAFTING_TABLE2.craft(EYE_OF_ENDER,[PEARL,BLAZE_ROD])
     EYE_OF_ENDER.pick_up()
-    END_PORTAL.interact(None,"other_sprites\\filled_end_portal.png",(5,1))
+    END_PORTAL.interact(None,"sprites\\other_sprites\\filled_end_portal.png",(5,1))
     DRAGON.interact(END_CREDIT,None,(640,22))
 
     #scrolling of screen
@@ -593,12 +608,3 @@ while True:
     FramePerSec.tick(FPS)
     CHEST.interact(DIAMOND,None,(1,1))
     """
-
-
-'''
-    for sprite in all_sprites:
-        if hasattr(sprite, "mask"):
-            mask_surface = sprite.mask.to_surface(setcolor=(255,0,0), unsetcolor=(0,0,0,0))
-            draw_pos = (sprite.pos[0] - scroll_x, sprite.pos[1])
-            displaysurface.blit(mask_surface, draw_pos)
-'''
