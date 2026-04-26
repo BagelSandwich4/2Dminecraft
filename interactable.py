@@ -1,0 +1,80 @@
+import pygame
+from pygame.locals import *
+import blocks_to_pixels
+
+class Interactable(pygame.sprite.Sprite):
+    '''
+    This class is for entities that are interactable like chests,mobs, and ore.
+    '''
+    def __init__(self,image,position,size, solid,reversed=False):
+        '''
+        Setting up an interactable sprite
+        Inputs:
+            image - a string representing the path to the .png file
+            position - a tuple representing the x and y coordinates of the sprite in blocks (32 pixels = 1 block)
+            size - size of the .png uploaded
+            solid - boolean logic telling whether the player can pass through the interactable
+        '''
+        super().__init__()
+        #loading the image
+        img = pygame.image.load(image).convert_alpha()
+        #assigning the image
+        self.image = pygame.transform.scale(img, (blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])))
+        #reversing image in neccesary
+        if reversed == True:
+            self.image = pygame.transform.flip(self.image, True, False)
+        #setting up mask
+        self.mask = pygame.mask.from_surface(self.image)
+        #setting it to visible
+        self.visible = True
+        #setting it to not passable
+        self.solid = solid
+        #setting position in pixels
+        self.pos = [blocks_to_pixels.blocks_to_pixels(position[0]),blocks_to_pixels.blocks_to_pixels(position[1])]
+    def interact(self,player,drop,newimage,size):
+        '''
+        This method takes an interactable and makes the drop item visible and turns the interactable either into the newimage or invisible
+        Inputs:
+            drop - the instance of the item class that is being dropped by the interactable
+            newimage - a string representing the path to the png you wish to change the interatable to. Or None if you wish the iteractable to go away
+            size - a tuple representing the x and y size of the newimage in blocks
+        '''
+        if newimage != None and self.mask.overlap(player.mask, [int(player.pos.x - self.pos[0]), int(player.pos.y - self.pos[1])]):
+            #loading the new image
+            img = pygame.image.load(newimage).convert_alpha()
+            #assigning the new image
+            self.image = pygame.transform.scale(img, (blocks_to_pixels.blocks_to_pixels(size[0]),blocks_to_pixels.blocks_to_pixels(size[1])))
+            if drop != None:
+                #setting the item the interactable drops to visible
+                drop.visible = True
+            #removing the mask so you cant interact with it again
+            self.mask.clear()
+        elif newimage == None and self.mask.overlap(player.mask, [int(player.pos.x - self.pos[0]), int(player.pos.y - self.pos[1])]):
+            if drop != None:
+                #setting the dropped item to visible
+                drop.visible = True
+            #setting the interactable to invisible
+            self.visible = False
+            #making it no longer solid
+            self.solid = False
+            #getting rid of its mask
+            self.mask.clear()
+    def craft(self,drop,cost,hotbar,player):
+        '''
+        Determines how crafting function of crafting tables works
+        Inputs:
+            drop: instance of outputted item
+            cost: instance of required item to get drop
+        '''
+        if not isinstance(cost, (list, tuple)):
+            cost = [cost]
+        #ensures the player is touching the crafting table
+        if not self.mask.overlap(player.mask, [self.pos[0]-player.pos.x, self.pos[1]-player.pos.y]):
+            return
+        #checking for the item needed to craft
+        if all(hotbar.check_for_item(item) for item in cost) and hotbar is not None:
+            for item in cost:
+                #deleting the item needed to craft
+                hotbar.delete_item(item)
+            #storing the crafted item in the hotbar
+            hotbar.pick_up_item(drop)
