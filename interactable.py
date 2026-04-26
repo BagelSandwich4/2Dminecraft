@@ -29,9 +29,11 @@ class Interactable(pygame.sprite.Sprite):
         self.visible = True
         #setting it to not passable
         self.solid = solid
+        #setting end to false by default
+        self.end = False
         #setting position in pixels
         self.pos = [blocks_to_pixels.blocks_to_pixels(position[0]),blocks_to_pixels.blocks_to_pixels(position[1])]
-    def interact(self,player,drop,newimage,size):
+    def interact(self,player,drop,newimage,size, end=False):
         '''
         This method takes an interactable and makes the drop item visible and turns the interactable either into the newimage or invisible
         Inputs:
@@ -39,6 +41,8 @@ class Interactable(pygame.sprite.Sprite):
             newimage - a string representing the path to the png you wish to change the interatable to. Or None if you wish the iteractable to go away
             size - a tuple representing the x and y size of the newimage in blocks
         '''
+        if not hasattr(self, end):
+            self.end = False
         if newimage != None and self.mask.overlap(player.mask, [int(player.pos.x - self.pos[0]), int(player.pos.y - self.pos[1])]):
             #loading the new image
             img = pygame.image.load(newimage).convert_alpha()
@@ -49,6 +53,7 @@ class Interactable(pygame.sprite.Sprite):
                 drop.visible = True
             #removing the mask so you cant interact with it again
             self.mask.clear()
+            #self.end = end
         elif newimage == None and self.mask.overlap(player.mask, [int(player.pos.x - self.pos[0]), int(player.pos.y - self.pos[1])]):
             if drop != None:
                 #setting the dropped item to visible
@@ -59,6 +64,7 @@ class Interactable(pygame.sprite.Sprite):
             self.solid = False
             #getting rid of its mask
             self.mask.clear()
+            #self.end = end
     def craft(self,drop,cost,hotbar,player):
         '''
         Determines how crafting function of crafting tables works
