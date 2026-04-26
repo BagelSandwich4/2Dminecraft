@@ -88,7 +88,7 @@ CRAFTING_TABLE2 = interactable.Interactable("sprites\\blocks\\crafting_table_sid
 END_PORTAL = interactable.Interactable("sprites\\other_sprites\\end_portal.png",(63,17),(5,1),True,EYE_OF_ENDER)
 
 #Mobs image,position,size,requirement,health,health_size
-DRAGON = mob.Mob("sprites\\other_sprites\\dragon.png",(77,11),(16,6),DIAMOND_SWORD, 20,(1,1))
+DRAGON = mob.Mob("sprites\\other_sprites\\dragon.png",(77,11),(16,6),DIAMOND_SWORD, 40,(1,1))
 BLAZE = mob.Mob("sprites\\other_sprites\\blaze.png",(51,14),(2,4), DIAMOND_SWORD, 8,(1,1))
 
 #Hotbar takes 4 inputs. build("string with path to image of whole hotbar", "string with path to image of selected hotbar slot",(location), (size))
