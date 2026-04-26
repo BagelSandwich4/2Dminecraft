@@ -193,7 +193,7 @@ while True:
                 P1.jump(platforms)
     #every tick it checks these
     P1.move(HOTBAR)
-    P1.update(platforms, interactables,mobs, collisions.solid_mask)
+    P1.update(platforms, interactables, collisions.solid_mask)
     P1.change_image()
     IRON_PICKAXE.pick_up(HOTBAR,P1)
     CHEST.interact(P1, IRON_PICKAXE,"sprites\\other_sprites\\chest_front.png",(1,1), HOTBAR)
