@@ -6,7 +6,7 @@ class Interactable(pygame.sprite.Sprite):
     '''
     This class is for entities that are interactable like chests,mobs, and ore.
     '''
-    def __init__(self,image,position,size, solid,reversed=False):
+    def __init__(self,image,position,size, solid,requirement, reversed=False):
         '''
         Setting up an interactable sprite
         Inputs:
@@ -15,6 +15,7 @@ class Interactable(pygame.sprite.Sprite):
             size - size of the .png uploaded
             solid - boolean logic telling whether the player can pass through the interactable
             reversed - boolean logic showing whether or not to reverse the image
+            requirement - None or an instance of the item class that must be held in order to interact
         '''
         super().__init__()
         #loading the image
@@ -34,7 +35,9 @@ class Interactable(pygame.sprite.Sprite):
         self.end = False
         #setting position in pixels
         self.pos = [blocks_to_pixels.blocks_to_pixels(position[0]),blocks_to_pixels.blocks_to_pixels(position[1])]
-    def interact(self,player,drop,newimage,size, end=False):
+        #setting required instance
+        self.requirement = requirement
+    def interact(self,player,drop,newimage,size, hotbar,end=False):
         '''
         This method takes an interactable and makes the drop item visible and turns the interactable either into the newimage or invisible
         Inputs:
@@ -42,9 +45,14 @@ class Interactable(pygame.sprite.Sprite):
             drop - the instance of the item class that is being dropped by the interactable
             newimage - a string representing the path to the png you wish to change the interatable to. Or None if you wish the iteractable to go away
             size - a tuple representing the x and y size of the newimage in blocks
+            hotbar - instance of the hotbar class
             end - boolean logic of whether or not interacting with this ends the game
         '''
-        if newimage != None and self.mask.overlap(player.mask, [int(player.pos.x - self.pos[0]), int(player.pos.y - self.pos[1])]):
+        if self.requirement is None:
+            correct_held_item = True
+        else:
+            correct_held_item = (self.requirement == hotbar.selected)
+        if newimage != None and correct_held_item and self.mask.overlap(player.mask, [int(player.pos.x - self.pos[0]), int(player.pos.y - self.pos[1])]):
             self.end = end
             #loading the new image
             img = pygame.image.load(newimage).convert_alpha()
@@ -56,7 +64,7 @@ class Interactable(pygame.sprite.Sprite):
             #removing the mask so you cant interact with it again as long as it isnt the dragon
             if self.end == False:
                 self.mask.clear()
-        elif newimage == None and self.mask.overlap(player.mask, [int(player.pos.x - self.pos[0]), int(player.pos.y - self.pos[1])]):
+        elif newimage == None and correct_held_item and self.mask.overlap(player.mask, [int(player.pos.x - self.pos[0]), int(player.pos.y - self.pos[1])]):
             self.end = end
             if drop != None:
                 #setting the dropped item to visible
