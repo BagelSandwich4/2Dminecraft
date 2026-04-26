@@ -35,8 +35,8 @@ class Mob(pygame.sprite.Sprite):
         self.pos = [blocks_to_pixels.blocks_to_pixels(position[0]),blocks_to_pixels.blocks_to_pixels(position[1])]
         #setting required instance
         self.requirement = requirement
-        health_pos = [position[0], position[1]-health_size[1]]
-        self.health_bar = health_bar.Health_Bar(health_pos,health_size,health)
+        health_pos = [self.pos[0], self.pos[1]-health_size[1]]
+        self.health_bar = health_bar.Health_Bar(health_pos,health)
 
     def damage(self,player, hotbar,drop, end=False):
         '''
