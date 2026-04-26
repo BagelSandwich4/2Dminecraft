@@ -11,6 +11,7 @@ import interactable
 import build
 import collisions
 import build
+import mob
 
 pygame.init()
 vec = pygame.math.Vector2  # 2 for two dimensional
@@ -82,11 +83,13 @@ END_CREDIT = item.Item("sprites\\backgrounds\\end credit.png",(73,6),(40/1.6,22/
 CHEST = interactable.Interactable("sprites\\other_sprites\\chest_front.png",(17,11),(1,1), False, None)
 DIAMOND_ORE = interactable.Interactable("sprites\\blocks\\diamond_ore.png", (36,17), (1,1), True, IRON_PICKAXE) 
 CRAFTING_TABLE = interactable.Interactable("sprites\\blocks\\crafting_table_side.png",(40,17),(1,1), False,None)
-BLAZE = interactable.Interactable("sprites\\other_sprites\\blaze.png",(51,14),(2,4), False,DIAMOND_SWORD)
 CHEST2 = interactable.Interactable("sprites\\other_sprites\\chest_front.png",(54,17),(1,1),False,None)
 CRAFTING_TABLE2 = interactable.Interactable("sprites\\blocks\\crafting_table_side.png",(57,17),(1,1),False,None)
 END_PORTAL = interactable.Interactable("sprites\\other_sprites\\end_portal.png",(63,17),(5,1),True,EYE_OF_ENDER)
-DRAGON = interactable.Interactable("sprites\\other_sprites\\dragon.png",(77,11),(16,6),False,DIAMOND_SWORD)
+
+#Mobs image,position,size,requirement,health,health_size
+DRAGON = mob.Mob("sprites\\other_sprites\\dragon.png",(77,11),(16,6),DIAMOND_SWORD, 8,(10,10))
+BLAZE = mob.Mob("sprites\\other_sprites\\blaze.png",(51,14),(2,4), DIAMOND_SWORD, 20,(10,10))
 
 #Hotbar takes 4 inputs. build("string with path to image of whole hotbar", "string with path to image of selected hotbar slot",(location), (size))
 HOTBAR = hotbar.Hotbar("sprites\\other_sprites\\hotbar.png", "sprites\\other_sprites\\selected_hotbar_slot.png", (WIDTH/3.3, HEIGHT-15), [135,16], WIDTH)
@@ -96,6 +99,7 @@ builds = pygame.sprite.Group()
 platforms = pygame.sprite.Group()
 interactables = pygame.sprite.Group()
 items = pygame.sprite.Group()
+mobs = pygame.sprite.Group()
 
 #creating a group with every sprite
 all_sprites = pygame.sprite.Group()
@@ -126,11 +130,11 @@ platforms.add(LOWER_END_PLATFORM)
 interactables.add(CHEST)
 interactables.add(DIAMOND_ORE)
 interactables.add(CRAFTING_TABLE)
-interactables.add(BLAZE)
 interactables.add(CHEST2)
 interactables.add(CRAFTING_TABLE2)
 interactables.add(END_PORTAL)
-interactables.add(DRAGON)
+mobs.add(DRAGON)
+mobs.add(BLAZE)
 items.add(DIAMOND)
 items.add(IRON_PICKAXE)
 items.add(DIAMOND_SWORD)
@@ -189,7 +193,7 @@ while True:
                 P1.jump(platforms)
     #every tick it checks these
     P1.move(HOTBAR)
-    P1.update(platforms, interactables, collisions.solid_mask)
+    P1.update(platforms, interactables,mobs, collisions.solid_mask)
     P1.change_image()
     IRON_PICKAXE.pick_up(HOTBAR,P1)
     CHEST.interact(P1, IRON_PICKAXE,"sprites\\other_sprites\\chest_front.png",(1,1), HOTBAR)
@@ -198,14 +202,14 @@ while True:
     DIAMOND_ORE.interact(P1,DIAMOND,None,(1,1), HOTBAR)
     DIAMOND.pick_up(HOTBAR,P1)
     CRAFTING_TABLE.craft(DIAMOND_SWORD,[DIAMOND],HOTBAR,P1)
-    BLAZE.interact(P1,BLAZE_ROD,None,(2,4), HOTBAR)
+    BLAZE.damage(P1, HOTBAR, BLAZE_ROD)
     BLAZE_ROD.pick_up(HOTBAR,P1)
     CHEST2.interact(P1,PEARL,None,(1,1), HOTBAR)
     PEARL.pick_up(HOTBAR,P1)
     CRAFTING_TABLE2.craft(EYE_OF_ENDER, [PEARL,BLAZE_ROD], HOTBAR, P1)
     EYE_OF_ENDER.pick_up(HOTBAR,P1)
     END_PORTAL.interact(P1,None,"sprites\\other_sprites\\filled_end_portal.png",(5,1), HOTBAR)
-    DRAGON.interact(P1,None,None,(640,22), HOTBAR, True)
+    DRAGON.damage(P1, HOTBAR, BLAZE_ROD, True)
 
     #scrolling of screen
     scroll_x = int(P1.pos.x - (WIDTH / 2))

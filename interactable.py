@@ -14,8 +14,8 @@ class Interactable(pygame.sprite.Sprite):
             position - a tuple representing the x and y coordinates of the sprite in blocks (32 pixels = 1 block)
             size - size of the .png uploaded
             solid - boolean logic telling whether the player can pass through the interactable
-            reversed - boolean logic showing whether or not to reverse the image
             requirement - None or an instance of the item class that must be held in order to interact
+            reversed - boolean logic showing whether or not to reverse the image
         '''
         super().__init__()
         #loading the image
