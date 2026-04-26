@@ -11,8 +11,6 @@ import interactable
 import build
 import collisions
 import build
-import end
-
 
 pygame.init()
 vec = pygame.math.Vector2  # 2 for two dimensional
@@ -87,7 +85,7 @@ DIAMOND_SWORD = item.Item("sprites\\items\\diamond_sword.png",(41,17),(1,1))
 BLAZE_ROD = item.Item("sprites\\items\\blaze_rod.png",(51,17),(1,1))
 EYE_OF_ENDER = item.Item('sprites\\items\\ender_eye.png',(58,17),(1,1))
 PEARL = item.Item("sprites\\items\\ender_pearl.png",(55,17),(1,1))
-END_CREDIT = item.Item("sprites\\backgrounds\\end credit.png",(73,6),(40,22))
+END_CREDIT = item.Item("sprites\\backgrounds\\end credit.png",(73,6),(40/1.6,22/1.6))
 
 #Hotbar takes 4 inputs. build("string with path to image of whole hotbar", "string with path to image of selected hotbar slot",(location), (size))
 HOTBAR = hotbar.Hotbar("sprites\\other_sprites\\hotbar.png", "sprites\\other_sprites\\selected_hotbar_slot.png", (WIDTH/3.3, HEIGHT-15), [135,16], WIDTH)
@@ -206,7 +204,7 @@ while True:
     CRAFTING_TABLE2.craft(EYE_OF_ENDER, [PEARL,BLAZE_ROD], HOTBAR, P1)
     EYE_OF_ENDER.pick_up(HOTBAR,P1)
     END_PORTAL.interact(P1,None,"sprites\\other_sprites\\filled_end_portal.png",(5,1))
-    DRAGON.interact(P1,END_CREDIT,None,(640,22))
+    DRAGON.interact(P1,None,None,(640,22), True)
 
     #scrolling of screen
     scroll_x = int(P1.pos.x - (WIDTH / 2))
@@ -242,21 +240,7 @@ while True:
                 displaysurface.blit(slot.image, (int(draw_x), int(draw_y)))
     #checking for end
     if DRAGON.end == True:
-        end(credits, all_sprites)
-
-    
-    #code for displaying masks just change the sprite and it will display in red
-    #display_mask(DIAMOND)
-
-    #every tick it checks these
-    """
-    display_mask(P1)
-    P1.move()
-    P1.update()
-    P1.change_image()
-    IRON_PICKAXE.pick_up()
-    CHEST.interact(IRON_PICKAXE,"other_sprites\\chest_front.png",(1,1))
-    pygame.display.update()
-    FramePerSec.tick(FPS)
-    CHEST.interact(DIAMOND,None,(1,1))
-    """
+        #removing all sprites so next draw contains nothing
+        all_sprites.empty()
+        #drawing the credits
+        displaysurface.blit(END_CREDIT.image_normal, (blocks_to_pixels.blocks_to_pixels(-2),0))

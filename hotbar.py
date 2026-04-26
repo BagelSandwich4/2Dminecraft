@@ -15,7 +15,8 @@ class Hotbar(pygame.sprite.Sprite):
             image - a string representing the path to the .png file of the ui
             selected_image - a string representing the path to the .png file of the selected item ui
             position - a tuple representing the x and y coordinates of the sprite in pixels
-            size - size of the .png uploaded in pixels
+            size - tuple of two integers representing the size of the .png uploaded in pixels
+            width - integer representing width of screen in pixels
         '''
         super().__init__()
         #loads the image
@@ -42,7 +43,9 @@ class Hotbar(pygame.sprite.Sprite):
     
     def change_selected(self,new_selected):
         '''
-        This determines which slot is selected and changes certain varibles based on that
+        This assigns the selected slot and changes certain varibles based on that
+        Inputs:
+            new_selected - integer representing the index of the new selected slot in the hotbar
         '''
         self.selected_slot = new_selected
         #changes position of selected slot
@@ -55,7 +58,7 @@ class Hotbar(pygame.sprite.Sprite):
             item - an instance of the item class to be picked up
         Returns:
             True - boolean logic that says if the item was picked up
-            False - True - boolean logic that says if the item was not picked up
+            False - boolean logic that says if the item was not picked up
         '''
         #sets index of current selected slot
         i = self.selected_slot - 1
@@ -70,7 +73,7 @@ class Hotbar(pygame.sprite.Sprite):
         '''
         Removes an item stored in the hotbar
         Inputs:
-            item: instance of the item class that is being deleted
+            item - instance of the item class that is being deleted
         '''
         for i in range(0,9):
             if self.hotbar[i]  == item:
@@ -83,10 +86,10 @@ class Hotbar(pygame.sprite.Sprite):
         '''
         Checks the hotbar for a specifc item
         Inputs:
-            item: instance of the item class that is being searched for
+            item - instance of the item class that is being searched for
         Returns:
-            True: Boolean logic if the item is being stored in the hotbar
-            False: Boolean logic if the item is not being stored in the hotbar
+            True - Boolean logic if the item is being stored in the hotbar
+            False - Boolean logic if the item is not being stored in the hotbar
         '''
         for i in range(0,9):
             if self.hotbar[i] == item:

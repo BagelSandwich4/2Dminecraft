@@ -4,8 +4,8 @@ def solid_mask(instance, player):
     '''
     Turns collisions on for any entity so you cant pass through the sprite
     Inputs:
-        instance: class instance of the entity
-        player: instance of the Player class in 2d_minecraft
+        instance - class instance of the entity
+        player - instance of the Player class in 2d_minecraft
     '''
     if player.vel.y > 0:
         # 1. Calculate offset to check if we are touching the platform at all

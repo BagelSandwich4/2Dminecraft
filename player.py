@@ -65,6 +65,8 @@ class Player(pygame.sprite.Sprite):
     def move(self, hotbar):
         '''
         This is the controller. It tells the model what to do when someone presses a key and controlls physics of the player
+        Inputs:
+            hotbar - instance of the hotbar class
         '''
         #controller
         #constantly setting gravity as acceleration downwards
@@ -96,6 +98,10 @@ class Player(pygame.sprite.Sprite):
     def update(self, platforms, interactables, solid_mask):
         '''
         This is the update method. It makes it so the player doesnt fall through the floor or pass through entities.
+        Inputs:
+            platforms - group of all instances in the platform class
+            interatables - group of all instances in the interactable class
+            solid_mask - function that turns the players collisions on
         '''
         #sets the player to be touching the ground by default
         self.grounded = False
@@ -110,6 +116,8 @@ class Player(pygame.sprite.Sprite):
     def jump(self, platforms):
         '''
         This makes the player jump.
+        Inputs:
+            platforms - group of all instances in the platform class
         '''
         #reads which keys are pressed
         pressed_keys = pygame.key.get_pressed()

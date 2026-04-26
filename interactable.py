@@ -14,6 +14,7 @@ class Interactable(pygame.sprite.Sprite):
             position - a tuple representing the x and y coordinates of the sprite in blocks (32 pixels = 1 block)
             size - size of the .png uploaded
             solid - boolean logic telling whether the player can pass through the interactable
+            reversed - boolean logic showing whether or not to reverse the image
         '''
         super().__init__()
         #loading the image
@@ -37,13 +38,14 @@ class Interactable(pygame.sprite.Sprite):
         '''
         This method takes an interactable and makes the drop item visible and turns the interactable either into the newimage or invisible
         Inputs:
+            player - instance of the player class
             drop - the instance of the item class that is being dropped by the interactable
             newimage - a string representing the path to the png you wish to change the interatable to. Or None if you wish the iteractable to go away
             size - a tuple representing the x and y size of the newimage in blocks
+            end - boolean logic of whether or not interacting with this ends the game
         '''
-        if not hasattr(self, end):
-            self.end = False
         if newimage != None and self.mask.overlap(player.mask, [int(player.pos.x - self.pos[0]), int(player.pos.y - self.pos[1])]):
+            self.end = end
             #loading the new image
             img = pygame.image.load(newimage).convert_alpha()
             #assigning the new image
@@ -51,10 +53,11 @@ class Interactable(pygame.sprite.Sprite):
             if drop != None:
                 #setting the item the interactable drops to visible
                 drop.visible = True
-            #removing the mask so you cant interact with it again
-            self.mask.clear()
-            #self.end = end
+            #removing the mask so you cant interact with it again as long as it isnt the dragon
+            if self.end == False:
+                self.mask.clear()
         elif newimage == None and self.mask.overlap(player.mask, [int(player.pos.x - self.pos[0]), int(player.pos.y - self.pos[1])]):
+            self.end = end
             if drop != None:
                 #setting the dropped item to visible
                 drop.visible = True
@@ -64,13 +67,14 @@ class Interactable(pygame.sprite.Sprite):
             self.solid = False
             #getting rid of its mask
             self.mask.clear()
-            #self.end = end
     def craft(self,drop,cost,hotbar,player):
         '''
         Determines how crafting function of crafting tables works
         Inputs:
-            drop: instance of outputted item
-            cost: instance of required item to get drop
+            drop - instance of the item class that is the output of the craft
+            cost - instance of the item class that is required to get drop
+            hotbar - instance of the hotbar class
+            player - instance of the player class
         '''
         if not isinstance(cost, (list, tuple)):
             cost = [cost]

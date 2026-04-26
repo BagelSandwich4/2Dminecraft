@@ -14,6 +14,7 @@ class Item(pygame.sprite.Sprite):
             image - a string representing the path to the .png file
             position - a tuple representing the x and y coordinates of the sprite in blocks (32 pixels = 1 block)
             size - size of the .png uploaded
+            reversed - boolean logic showing whether or not to reverse the image
         '''
         super().__init__()
         #loading item image
@@ -36,6 +37,9 @@ class Item(pygame.sprite.Sprite):
     def pick_up(self, hotbar, player):
         '''
         This method is run if the player picks the item up. It is then stored in the players selected hotbar slot
+        Inputs:
+            hotbar - instance of the hotbar class
+            player - instance of the player class
         '''
         # Only attempt pickup if the item is in-world and has a mask
         if not self.visible:
@@ -58,6 +62,8 @@ class Item(pygame.sprite.Sprite):
     def holding_item(self,player):
         '''
         This determines if the item is selected and tells the view where to put the item on the player so it looks like steve is holding it.
+        Inputs:
+            player - instance of the player class
         '''
         if player.image == player.imageright:
             #setting hold coordinates if steve is facing right 
