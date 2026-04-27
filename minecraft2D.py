@@ -12,6 +12,7 @@ import build
 import collisions
 import build
 import mob
+import controller
 
 pygame.init()
 vec = pygame.math.Vector2  # 2 for two dimensional
@@ -40,10 +41,11 @@ bg_image = pygame.image.load("sprites\\backgrounds\\sky.png").convert()
 bg_image = pygame.transform.scale(bg_image, (WIDTH, HEIGHT))
         
 #creating instances of the classes for each sprite 
+CONTROLLER = controller.Controller()
 
 #Build takes 3 or 4 inputs. build("string with path to image", (location), (size), optional(reversed=True))
 VILLAGE_HOUSE = build.Build("sprites\\other_sprites\\Village House.png",(10,5),(7,7))
-END_BACKGROUND = build.Build("sprites\\backgrounds\\background_end.png", (68,6),(40,30))
+END_BACKGROUND = build.Build("sprites\\backgrounds\\background_end.png", (68,6),(20,30))
 MOUNTAIN_LEFT = build.Build("sprites\\backgrounds\\background_cave_entrance.png", (15,0),(20,13))
 MOUNTAIN_RIGHT = build.Build("sprites\\backgrounds\\background_cave_entrance.png", (35,0), (20,13), reversed=True)
 CAVE_BACKGROUND = build.Build("sprites\\backgrounds\\cave_background.png",(27,13), (20,13))
@@ -61,8 +63,8 @@ GRASS = platform_func.Platform("sprites\\platforms\\platform_grass.png",(0,12),(
 CAVE_ENTRANCE = platform_func.Platform("sprites\\platforms\\platform_cave_entrance.png",(20,3),(10,13))
 CAVE_CONT = platform_func.Platform("sprites\\platforms\\platform_cave_entrance.png",(27,6),(10,13))
 CAVE_PLATFORM = platform_func.Platform("sprites\\platforms\\cave_platform.png",(37,18),(WIDTH_BLOCKS,1))
-NETHER_PLATFORM = platform_func.Platform("sprites\\platforms\\netehr_platform.png",(45,18),(WIDTH_BLOCKS,1))
-STRONGHOLD_PLATFORM = platform_func.Platform("sprites\\platforms\\netehr_platform.png",(59,18),(WIDTH_BLOCKS,1))
+NETHER_PLATFORM = platform_func.Platform("sprites\\platforms\\nether_platform.png",(45,18),(WIDTH_BLOCKS,1))
+STRONGHOLD_PLATFORM = platform_func.Platform("sprites\\platforms\\nether_platform.png",(59,18),(WIDTH_BLOCKS,1))
 END_PLATFORM = platform_func.Platform("sprites\\platforms\\end_platform.png",(68,7),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
 LOWER_END_PLATFORM = platform_func.Platform("sprites\\platforms\\lower_end_platform.png",(68,12),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
 
@@ -88,8 +90,8 @@ CRAFTING_TABLE2 = interactable.Interactable("sprites\\blocks\\crafting_table_sid
 END_PORTAL = interactable.Interactable("sprites\\other_sprites\\end_portal.png",(63,17),(5,1),True,EYE_OF_ENDER)
 
 #Mobs image,position,size,requirement,health,health_size
-DRAGON = mob.Mob("sprites\\other_sprites\\dragon.png",(77,11),(16,6),DIAMOND_SWORD, 40,(1,1))
-BLAZE = mob.Mob("sprites\\other_sprites\\blaze.png",(51,14),(2,4), DIAMOND_SWORD, 8,(1,1))
+DRAGON = mob.Mob("sprites\\other_sprites\\dragon.png",(77,11),(16,6),DIAMOND_SWORD, 8,(10,10))
+BLAZE = mob.Mob("sprites\\other_sprites\\blaze.png",(51,14),(2,4), DIAMOND_SWORD, 20,(10,10))
 
 #Hotbar takes 4 inputs. build("string with path to image of whole hotbar", "string with path to image of selected hotbar slot",(location), (size))
 HOTBAR = hotbar.Hotbar("sprites\\other_sprites\\hotbar.png", "sprites\\other_sprites\\selected_hotbar_slot.png", (WIDTH/3.3, HEIGHT-15), [135,16], WIDTH)
@@ -180,9 +182,9 @@ all_sprites.add(CRAFTING_TABLE2)
 all_sprites.add(END_PORTAL)
 all_sprites.add(END_CREDIT)
 all_sprites.add(P1)
-frame = 0
+
 while True:
-    frame += frame +1
+
     #main game loop
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -192,9 +194,9 @@ while True:
             if event.key == pygame.K_SPACE:
                 P1.jump(platforms)
     #every tick it checks these
-    P1.move(HOTBAR)
-    P1.update(platforms, interactables, collisions.solid_mask)
-    P1.change_image()
+    CONTROLLER.move(HOTBAR)
+    CONTROLLER.update(platforms, interactables, collisions.solid_mask)
+    CONTROLLER.change_image()
     IRON_PICKAXE.pick_up(HOTBAR,P1)
     CHEST.interact(P1, IRON_PICKAXE,"sprites\\other_sprites\\chest_front.png",(1,1), HOTBAR)
     pygame.display.update()
@@ -202,15 +204,14 @@ while True:
     DIAMOND_ORE.interact(P1,DIAMOND,None,(1,1), HOTBAR)
     DIAMOND.pick_up(HOTBAR,P1)
     CRAFTING_TABLE.craft(DIAMOND_SWORD,[DIAMOND],HOTBAR,P1)
+    BLAZE.damage(P1, HOTBAR, BLAZE_ROD)
+    BLAZE_ROD.pick_up(HOTBAR,P1)
     CHEST2.interact(P1,PEARL,None,(1,1), HOTBAR)
     PEARL.pick_up(HOTBAR,P1)
     CRAFTING_TABLE2.craft(EYE_OF_ENDER, [PEARL,BLAZE_ROD], HOTBAR, P1)
     EYE_OF_ENDER.pick_up(HOTBAR,P1)
     END_PORTAL.interact(P1,None,"sprites\\other_sprites\\filled_end_portal.png",(5,1), HOTBAR)
-    if random.randrange(0, 100, 1) < 10:
-        DRAGON.damage(P1, HOTBAR, BLAZE_ROD, True)
-        BLAZE.damage(P1, HOTBAR, BLAZE_ROD)
-    BLAZE_ROD.pick_up(HOTBAR,P1)
+    DRAGON.damage(P1, HOTBAR, BLAZE_ROD, True)
 
     #scrolling of screen
     scroll_x = int(P1.pos.x - (WIDTH / 2))
@@ -223,25 +224,7 @@ while True:
         if entity.visible:
             draw_pos = (entity.pos[0] - scroll_x, entity.pos[1] - scroll_y)
             displaysurface.blit(entity.image, (int(draw_pos[0]), int(draw_pos[1])))
-    #draws health bar
-    for mob in mobs:
-        if mob.health_bar.hp % 2 == 0: 
-            #if it is only full hearts
-            for i in range(int(mob.health_bar.hp/2)):
-                #drawing the hearts
-                draw_pos = (mob.health_bar.x_positions[i] - scroll_x, mob.health_bar.y_position - scroll_y)
-                displaysurface.blit(mob.health_bar.full_heart, (int(draw_pos[0]), int(draw_pos[1])))
-        else: 
-            #if there is a half heart
-            for i in range(int(mob.health_bar.hp/2)):
-                if i != int((mob.health_bar.hp+1)/2): 
-                    #drawing the full hearts
-                    draw_pos = (mob.health_bar.x_positions[i] - scroll_x, mob.health_bar.y_position - scroll_y)
-                    displaysurface.blit(mob.health_bar.full_heart, (int(draw_pos[0]), int(draw_pos[1])))
-                else: 
-                    #drawing the half heart
-                    draw_pos = (mob.health_bar.x_positions[i] - scroll_x, mob.health_bar.y_position - scroll_y)
-                    displaysurface.blit(mob.health_bar.half_heart, (int(draw_pos[0]), int(draw_pos[1])))
+    
     #ensures hotbar stays in the same place while moving
     draw_pos = (HOTBAR.pos[0], HOTBAR.pos[1])
     displaysurface.blit(HOTBAR.image, draw_pos)
