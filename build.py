@@ -11,7 +11,7 @@ class Build(pygame.sprite.Sprite):
     can pass through and are not interactable
     """
 
-    def __init__(self, image, position, size):
+    def __init__(self, image, position, size, reversed=False):
         """
         Setting up an building sprite
         Inputs:
@@ -19,6 +19,7 @@ class Build(pygame.sprite.Sprite):
             position - a tuple representing the x and y 
             coordinates of the sprite in blocks (32 pixels = 1 block)
             size - size of the .png uploaded
+            reversed - boolean logic representing whether the image is reversed
         """
         super().__init__()
         # loads image item
