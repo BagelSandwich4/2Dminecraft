@@ -1,3 +1,6 @@
+"""
+Contains blocks_to_pixels functions
+"""
 def blocks_to_pixels(blocks):
     '''
     Converts our in-game unit of "blocks" into pixels.
