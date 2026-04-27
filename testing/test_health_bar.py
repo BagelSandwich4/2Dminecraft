@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, Mock
-from health_bar import Health_Bar
+from health_bar import HealthBar
 
 
 class TestHealthBar(unittest.TestCase):
@@ -28,7 +28,7 @@ class TestHealthBar(unittest.TestCase):
         mock_load.return_value = fake_surface
         mock_scale.return_value = fake_surface
 
-        bar = Health_Bar((0, 0), 10)
+        bar = HealthBar((0, 0), 10)
         bar.damage(2)
 
         self.assertEqual(bar.hp, 8)
