@@ -1,5 +1,3 @@
-
-
 import pygame
 from pygame.locals import *
 import blocks_to_pixels
