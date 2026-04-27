@@ -3,7 +3,28 @@ from unittest.mock import patch, Mock
 from collisions import solid_mask
 
 class Testsolid_mask(unittest.TestCase):
+    """
+    Unit tests for the solid_mask collision function.
+
+    This test suite verifies that when a player collides with a solid instance
+    while moving downward, the player's state is updated correctly. In particular,
+    it checks that the player becomes grounded and that vertical velocity is reset.
+
+    Mocks are used to simulate player and platform objects so collision behavior
+    can be tested without relying on real game entities or Pygame surfaces.
+    """
+
     def setUp(self):
+        '''
+        Create mock objects in preparation for testing.
+
+        Inputs:
+            A mock player with a position, velocity, mask, image, etc to simulate with.
+            A mock platform with a position and mask to simulate with.
+        
+        Outputs:
+            No values returned. The test state prepares the output.
+        '''
 
         # create a fake player to mock
         self.player = Mock()
@@ -25,6 +46,14 @@ class Testsolid_mask(unittest.TestCase):
         self.instance.mask = Mock()
 
     def test_player_becomes_grounded_on_collision(self):
+        '''
+        Assert that the player is both grounded and has zero velocity when in contact
+        with the platform. 
+
+        This function simulates a collision between the fake player and platform by 
+        mocking mask overlap behavior. Once collided, the player's vertical velocity must 
+        reset to zero and their grounded state must be True.
+        '''
 
         # Simulate collision
         self.player.mask.overlap.return_value = (0, 0)
