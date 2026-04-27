@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, Mock
-from player import Player
+from controller import Player
 from pygame.locals import K_LEFT
 from pygame.locals import K_RIGHT
 from collections import defaultdict
