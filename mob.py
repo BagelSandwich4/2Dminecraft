@@ -37,6 +37,7 @@ class Mob(pygame.sprite.Sprite):
         self.requirement = requirement
         health_pos = [self.pos[0], self.pos[1]-health_size[1]]
         self.health_bar = health_bar.Health_Bar(health_pos,health)
+        self.life = True
 
     def damage(self,player, hotbar,drop, end=False):
         '''
@@ -55,14 +56,16 @@ class Mob(pygame.sprite.Sprite):
         if self.health_bar.hp > 0 and correct_held_item and self.mask.overlap(player.mask, [int(player.pos.x - self.pos[0]), int(player.pos.y - self.pos[1])]):
             self.health_bar.damage(1)
         #death
-        if self.health_bar.hp == 0:
+        if self.health_bar.hp == 0 and self.life == True:
             self.end = end
-            if drop != None:
+            if drop != None and drop.visible == False:
                 #setting the dropped item to visible
                 drop.visible = True
+                drop.mask = pygame.mask.from_surface(drop.image)
             #setting the mob to invisible
             self.visible = False
             #making it no longer solid
             self.solid = False
             #getting rid of its mask
             self.mask.clear()
+            self.life = False
