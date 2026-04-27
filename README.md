@@ -43,8 +43,8 @@ If this does not work for you you can follow these steps to download pygame
 ## Goal:
 Defeat the ender dragon by travelling through the overworld, nether and end.
 ## Controls:
-A - move left\
-D - move right\
+left arrow key - move left\
+right arrow key - move right\
 Space - jump\
 Number keys - switch through the hotbar slots\
 ## Picking up items:
