@@ -13,7 +13,6 @@ class Build(pygame.sprite.Sprite):
             image - a string representing the path to the .png file
             position - a tuple representing the x and y coordinates of the sprite in blocks (32 pixels = 1 block)
             size - size of the .png uploaded
-            reversed - boolean logic telling the init whether or not to reverse the image
         '''
         super().__init__()
         #loads image item
@@ -28,3 +27,4 @@ class Build(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         #sets it to visible
         self.visible = True
+

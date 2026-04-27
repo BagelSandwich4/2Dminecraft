@@ -4,7 +4,7 @@ import random
 import blocks_to_pixels
 from pygame.locals import *
 import hotbar
-import player
+import controller
 import item
 import platform_func
 import interactable
@@ -62,25 +62,17 @@ UNDERGROUND_NETHER_BACKGROUND2 = build.Build("sprites\\backgrounds\\underground_
                                              (48,18),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
 
 #Platform takes 3 inputs. build("string with path to image", (location), (size))
-GRASS = platform_func.Platform("sprites\\platforms\\platform_grass.png",
-                               (0,12),(WIDTH_BLOCKS, 1))
-CAVE_ENTRANCE = platform_func.Platform("sprites\\platforms\\platform_cave_entrance.png",
-                                       (20,3),(10,13))
-CAVE_CONT = platform_func.Platform("sprites\\platforms\\platform_cave_entrance.png",
-                                   (27,6),(10,13))
-CAVE_PLATFORM = platform_func.Platform("sprites\\platforms\\cave_platform.png",
-                                       (37,18),(WIDTH_BLOCKS,1))
-NETHER_PLATFORM = platform_func.Platform("sprites\\platforms\\netehr_platform.png",
-                                         (45,18),(WIDTH_BLOCKS,1))
-STRONGHOLD_PLATFORM = platform_func.Platform("sprites\\platforms\\netehr_platform.png",
-                                             (59,18),(WIDTH_BLOCKS,1))
-END_PLATFORM = platform_func.Platform("sprites\\platforms\\end_platform.png",
-                                      (68,7),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
-LOWER_END_PLATFORM = platform_func.Platform("sprites\\platforms\\lower_end_platform.png",
-                                            (68,12),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
+GRASS = platform_func.Platform("sprites\\platforms\\platform_grass.png",(0,12),(WIDTH_BLOCKS, 1))
+CAVE_ENTRANCE = platform_func.Platform("sprites\\platforms\\platform_cave_entrance.png",(20,3),(10,13))
+CAVE_CONT = platform_func.Platform("sprites\\platforms\\platform_cave_entrance.png",(27,6),(10,13))
+CAVE_PLATFORM = platform_func.Platform("sprites\\platforms\\cave_platform.png",(37,18),(WIDTH_BLOCKS,1))
+NETHER_PLATFORM = platform_func.Platform("sprites\\platforms\\netehr_platform.png",(45,18),(WIDTH_BLOCKS,1))
+STRONGHOLD_PLATFORM = platform_func.Platform("sprites\\platforms\\netehr_platform.png",(59,18),(WIDTH_BLOCKS,1))
+END_PLATFORM = platform_func.Platform("sprites\\platforms\\end_platform.png",(68,7),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
+LOWER_END_PLATFORM = platform_func.Platform("sprites\\platforms\\lower_end_platform.png",(68,12),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
 
 #Player takes one input. Player((size)
-P1 = player.Player((1,2))
+P1 = controller.Controller((1,2))
 
 #Item takes 3 inputs. build("string with path to image", (location), (size))
 IRON_PICKAXE = item.Item("sprites\\items\\iron_pickaxe.png",(18,11),(1,1))
@@ -94,7 +86,7 @@ END_CREDIT = item.Item("sprites\\backgrounds\\end credit.png",(73,6),(40/1.6,22/
 #Interactable takes 4 inputs. build("string with path to image", (location), (size), (required item), (whether or not you can pass through it))
 #image,position,size, solid,requirement, reversed=False
 CHEST = interactable.Interactable("sprites\\other_sprites\\chest_front.png",(17,11),(1,1), False, None)
-DIAMOND_ORE = interactable.Interactable("sprites\\blocks\\diamond_ore.png", (36,17), (1,1), True, IRON_PICKAXE) 
+DIAMOND_ORE = interactable.Interactable("sprites\\blocks\\diamond_ore.png", (36,17), (1,1), True, IRON_PICKAXE)
 CRAFTING_TABLE = interactable.Interactable("sprites\\blocks\\crafting_table_side.png",(40,17),(1,1), False,None)
 CHEST2 = interactable.Interactable("sprites\\other_sprites\\chest_front.png",(54,17),(1,1),False,None)
 CRAFTING_TABLE2 = interactable.Interactable("sprites\\blocks\\crafting_table_side.png",(57,17),(1,1),False,None)
@@ -230,7 +222,7 @@ while True:
     scroll_y = 0
     if P1.pos.y > blocks_to_pixels.blocks_to_pixels(12):
         scroll_y = int(P1.pos.y - (HEIGHT/2))
-    displaysurface.blit(bg_image, (0, 0)) 
+    displaysurface.blit(bg_image, (0, 0))
     #draws all the sprites
     for entity in all_sprites:
         if entity.visible:
@@ -238,20 +230,20 @@ while True:
             displaysurface.blit(entity.image, (int(draw_pos[0]), int(draw_pos[1])))
     #draws health bar
     for mob in mobs:
-        if mob.health_bar.hp % 2 == 0: 
+        if mob.health_bar.hp % 2 == 0:
             #if it is only full hearts
             for i in range(int(mob.health_bar.hp/2)):
                 #drawing the hearts
                 draw_pos = (mob.health_bar.x_positions[i] - scroll_x, mob.health_bar.y_position - scroll_y)
                 displaysurface.blit(mob.health_bar.full_heart, (int(draw_pos[0]), int(draw_pos[1])))
-        else: 
+        else:
             #if there is a half heart
             for i in range(int(mob.health_bar.hp/2)):
-                if i != int((mob.health_bar.hp+1)/2): 
+                if i != int((mob.health_bar.hp+1)/2):
                     #drawing the full hearts
                     draw_pos = (mob.health_bar.x_positions[i] - scroll_x, mob.health_bar.y_position - scroll_y)
                     displaysurface.blit(mob.health_bar.full_heart, (int(draw_pos[0]), int(draw_pos[1])))
-                else: 
+                else:
                     #drawing the half heart
                     draw_pos = (mob.health_bar.x_positions[i] - scroll_x, mob.health_bar.y_position - scroll_y)
                     displaysurface.blit(mob.health_bar.half_heart, (int(draw_pos[0]), int(draw_pos[1])))
@@ -265,7 +257,7 @@ while True:
         slot = HOTBAR.hotbar[i]
         if slot != None:
             #slot - instance of the item in position i
-            # i - slot index of instance 
+            # i - slot index of instance
             #drawing items in hotbar
             draw_pos = [HOTBAR.x_positions[i], HOTBAR.pos[1]]
             displaysurface.blit(slot.image_normal, draw_pos)
