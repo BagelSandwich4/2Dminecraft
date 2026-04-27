@@ -64,7 +64,8 @@ class Player(pygame.sprite.Sprite):
 
     def move(self, hotbar):
         '''
-        This is the controller. It tells the model what to do when someone presses a key and controlls physics of the player
+        This is the controller. It tells the model what to do when someone presses a key and controlls physics of the player.
+        
         Inputs:
             hotbar - instance of the hotbar class
         '''

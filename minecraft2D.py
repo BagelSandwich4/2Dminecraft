@@ -38,33 +38,46 @@ displaysurface = pygame.display.set_mode((WIDTH, HEIGHT), pygame.SCALED | pygame
 #setting the background of the game
 bg_image = pygame.image.load("sprites\\backgrounds\\sky.png").convert()
 bg_image = pygame.transform.scale(bg_image, (WIDTH, HEIGHT))
-        
-#creating instances of the classes for each sprite 
 
-#Build takes 3 or 4 inputs. build("string with path to image", (location), (size), optional(reversed=True))
+#creating instances of the classes for each sprite
+
+#initializing builds
 VILLAGE_HOUSE = build.Build("sprites\\other_sprites\\Village House.png",(10,5),(7,7))
 END_BACKGROUND = build.Build("sprites\\backgrounds\\background_end.png", (68,6),(40,30))
 MOUNTAIN_LEFT = build.Build("sprites\\backgrounds\\background_cave_entrance.png", (15,0),(20,13))
-MOUNTAIN_RIGHT = build.Build("sprites\\backgrounds\\background_cave_entrance.png", (35,0), (20,13), reversed=True)
+MOUNTAIN_RIGHT = build.Build("sprites\\backgrounds\\background_cave_entrance.png",
+                              (35,0), (20,13), reversed=True)
 CAVE_BACKGROUND = build.Build("sprites\\backgrounds\\cave_background.png",(27,13), (20,13))
 NETHER_PORTAL = build.Build("sprites\\other_sprites\\Netherportal_build.png",(43,13),(4,5))
 FORTRESS = build.Build("sprites\\backgrounds\\fort.png",(45,6),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
 STRONGHOLD = build.Build("sprites\\backgrounds\\fort.png",(59,6),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
 END = build.Build("sprites\\backgrounds\\fort.png",(73,6),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
-UNDERGROUND_BACKGROUND = build.Build("sprites\\backgrounds\\underground_background.png",(17,13),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
-UNDERGROUND_BACKGROUND2 = build.Build("sprites\\backgrounds\\underground_background.png",(25,18),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
-UNDERGROUND_NETHER_BACKGROUND = build.Build("sprites\\backgrounds\\underground_nether_background.png",(45,19),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
-UNDERGROUND_NETHER_BACKGROUND2 = build.Build("sprites\\backgrounds\\underground_nether_background.png",(48,18),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
+UNDERGROUND_BACKGROUND = build.Build("sprites\\backgrounds\\underground_background.png",
+                                     (17,13),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
+UNDERGROUND_BACKGROUND2 = build.Build("sprites\\backgrounds\\underground_background.png",(25,18),
+                                      (WIDTH_BLOCKS,HEIGHT_BLOCKS))
+UNDERGROUND_NETHER_BACKGROUND = build.Build("sprites\\backgrounds\\underground_nether_background.png",
+                                            (45,19),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
+UNDERGROUND_NETHER_BACKGROUND2 = build.Build("sprites\\backgrounds\\underground_nether_background.png",
+                                             (48,18),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
 
 #Platform takes 3 inputs. build("string with path to image", (location), (size))
-GRASS = platform_func.Platform("sprites\\platforms\\platform_grass.png",(0,12),(WIDTH_BLOCKS, 1))
-CAVE_ENTRANCE = platform_func.Platform("sprites\\platforms\\platform_cave_entrance.png",(20,3),(10,13))
-CAVE_CONT = platform_func.Platform("sprites\\platforms\\platform_cave_entrance.png",(27,6),(10,13))
-CAVE_PLATFORM = platform_func.Platform("sprites\\platforms\\cave_platform.png",(37,18),(WIDTH_BLOCKS,1))
-NETHER_PLATFORM = platform_func.Platform("sprites\\platforms\\netehr_platform.png",(45,18),(WIDTH_BLOCKS,1))
-STRONGHOLD_PLATFORM = platform_func.Platform("sprites\\platforms\\netehr_platform.png",(59,18),(WIDTH_BLOCKS,1))
-END_PLATFORM = platform_func.Platform("sprites\\platforms\\end_platform.png",(68,7),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
-LOWER_END_PLATFORM = platform_func.Platform("sprites\\platforms\\lower_end_platform.png",(68,12),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
+GRASS = platform_func.Platform("sprites\\platforms\\platform_grass.png",
+                               (0,12),(WIDTH_BLOCKS, 1))
+CAVE_ENTRANCE = platform_func.Platform("sprites\\platforms\\platform_cave_entrance.png",
+                                       (20,3),(10,13))
+CAVE_CONT = platform_func.Platform("sprites\\platforms\\platform_cave_entrance.png",
+                                   (27,6),(10,13))
+CAVE_PLATFORM = platform_func.Platform("sprites\\platforms\\cave_platform.png",
+                                       (37,18),(WIDTH_BLOCKS,1))
+NETHER_PLATFORM = platform_func.Platform("sprites\\platforms\\netehr_platform.png",
+                                         (45,18),(WIDTH_BLOCKS,1))
+STRONGHOLD_PLATFORM = platform_func.Platform("sprites\\platforms\\netehr_platform.png",
+                                             (59,18),(WIDTH_BLOCKS,1))
+END_PLATFORM = platform_func.Platform("sprites\\platforms\\end_platform.png",
+                                      (68,7),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
+LOWER_END_PLATFORM = platform_func.Platform("sprites\\platforms\\lower_end_platform.png",
+                                            (68,12),(WIDTH_BLOCKS,HEIGHT_BLOCKS))
 
 #Player takes one input. Player((size)
 P1 = player.Player((1,2))
