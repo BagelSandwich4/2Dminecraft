@@ -1,0 +1,329 @@
+ .u-section-1 {
+  background-image: url("images/minecrafttitlescreen.jpg");
+}
+
+.u-section-1 .u-sheet-1 {
+  min-height: 808px;
+}
+
+.u-section-1 .u-text-1 {
+  font-size: 4.5rem;
+  font-weight: 700;
+  margin: 51px auto 0 161px;
+}
+
+.u-section-1 .u-btn-1 {
+  font-weight: 700;
+  background-image: none;
+  margin: 69px auto 0;
+  padding: 10px 165px;
+}
+
+.u-section-1 .u-btn-2 {
+  font-weight: 700;
+  background-image: none;
+  margin: 16px auto 0;
+  padding: 10px 160px;
+}
+
+.u-section-1 .u-text-2 {
+  font-weight: 700;
+  font-size: 3.75rem;
+  width: 455px;
+  margin: 37px auto 0;
+}
+
+.u-section-1 .u-image-1 {
+  width: 143px;
+  height: 300px;
+  margin: -304px 75px 0 auto;
+}
+
+.u-section-1 .u-image-2 {
+  width: 272px;
+  height: 300px;
+  margin: -320px auto 0 0;
+}
+
+.u-section-1 .u-text-3 {
+  font-weight: 700;
+  width: 862px;
+  margin: 58px auto 60px;
+}
+
+@media (max-width: 1199px) {
+   .u-section-1 {
+    background-position: 50% 50%;
+  }
+
+  .u-section-1 .u-sheet-1 {
+    min-height: 666px;
+  }
+}
+
+@media (max-width: 991px) {
+  .u-section-1 .u-sheet-1 {
+    min-height: 510px;
+  }
+
+  .u-section-1 .u-text-3 {
+    width: 720px;
+  }
+}
+
+@media (max-width: 767px) {
+   .u-section-1 {
+    background-size: 120%;
+  }
+
+  .u-section-1 .u-sheet-1 {
+    min-height: 383px;
+  }
+
+  .u-section-1 .u-text-3 {
+    width: 540px;
+  }
+}
+
+@media (max-width: 575px) {
+   .u-section-1 {
+    background-position: 64.77% 87.37%;
+    background-size: auto 110%;
+  }
+
+  .u-section-1 .u-sheet-1 {
+    min-height: 241px;
+  }
+
+  .u-section-1 .u-text-1 {
+    margin-left: 101px;
+  }
+
+  .u-section-1 .u-text-2 {
+    width: 340px;
+  }
+
+  .u-section-1 .u-text-3 {
+    width: 340px;
+  }
+} .u-section-2 {
+  background-image: url("images/backgrounf.png");
+  background-position: 50% 50%;
+  min-height: 971px;
+}
+
+.u-section-2 .u-text-1 {
+  font-weight: 700;
+  font-size: 3.75rem;
+  margin: 66px auto 0;
+}
+
+.u-section-2 .u-text-2 {
+  font-weight: 700;
+  width: 546px;
+  margin: 8px auto 0;
+}
+
+.u-section-2 .u-btn-1 {
+  background-image: none;
+  padding: 0;
+}
+
+.u-section-2 .u-image-1 {
+  width: 505px;
+  height: 300px;
+  margin: 32px calc(((100% - 1140px) / 2)  + 50px) 0 auto;
+}
+
+.u-section-2 .u-image-2 {
+  width: 505px;
+  height: 300px;
+  margin: -300px auto 0 calc(((100% - 1140px) / 2));
+}
+
+.u-section-2 .u-image-3 {
+  width: 150px;
+  height: 300px;
+  margin: 40px calc(((100% - 1140px) / 2)  + 75px) 0 auto;
+}
+
+.u-section-2 .u-image-4 {
+  width: 505px;
+  height: 300px;
+  margin: -290px auto 0;
+}
+
+.u-section-2 .u-image-5 {
+  width: 337px;
+  height: 300px;
+  margin: -291px auto 60px 0;
+}
+
+@media (max-width: 1199px) {
+   .u-section-2 {
+    min-height: 801px;
+  }
+
+  .u-section-2 .u-image-1 {
+    margin-right: calc(((100% - 940px) / 2) + 50px);
+  }
+
+  .u-section-2 .u-image-2 {
+    margin-left: calc(((100% - 940px) / 2));
+  }
+
+  .u-section-2 .u-image-3 {
+    margin-right: calc(((100% - 940px) / 2) + 75px);
+  }
+}
+
+@media (max-width: 991px) {
+   .u-section-2 {
+    min-height: 614px;
+  }
+
+  .u-section-2 .u-image-1 {
+    margin-right: calc(((100% - 720px) / 2) + 50px);
+  }
+
+  .u-section-2 .u-image-2 {
+    margin-left: calc(((100% - 720px) / 2));
+  }
+
+  .u-section-2 .u-image-3 {
+    margin-right: calc(((100% - 720px) / 2) + 75px);
+  }
+}
+
+@media (max-width: 767px) {
+   .u-section-2 {
+    min-height: 461px;
+  }
+
+  .u-section-2 .u-text-2 {
+    width: 540px;
+  }
+
+  .u-section-2 .u-image-1 {
+    margin-right: calc(((100% - 540px) / 2) + 35px);
+  }
+
+  .u-section-2 .u-image-2 {
+    margin-left: calc(((100% - 540px) / 2));
+  }
+
+  .u-section-2 .u-image-3 {
+    margin-right: calc(((100% - 540px) / 2) + 75px);
+  }
+}
+
+@media (max-width: 575px) {
+   .u-section-2 {
+    min-height: 290px;
+  }
+
+  .u-section-2 .u-text-2 {
+    width: 340px;
+  }
+
+  .u-section-2 .u-image-1 {
+    width: 340px;
+    height: 202px;
+    margin-right: calc(((100% - 340px) / 2));
+  }
+
+  .u-section-2 .u-image-2 {
+    width: 340px;
+    height: 202px;
+    margin-top: -202px;
+    margin-left: calc(((100% - 340px) / 2));
+  }
+
+  .u-section-2 .u-image-3 {
+    margin-right: calc(((100% - 340px) / 2) + 75px);
+  }
+
+  .u-section-2 .u-image-4 {
+    width: 340px;
+    height: 202px;
+  }
+
+  .u-section-2 .u-image-5 {
+    margin-top: -193px;
+  }
+} .u-section-3 {
+  background-image: url("images/minecraft-title-screen-house-12.jpg");
+  background-position: 50% 50%;
+}
+
+.u-section-3 .u-sheet-1 {
+  min-height: 841px;
+}
+
+.u-section-3 .u-text-1 {
+  font-weight: 700;
+  font-size: 3.75rem;
+  margin: 48px auto 0;
+}
+
+.u-section-3 .u-text-2 {
+  margin: 20px auto 0;
+}
+
+.u-section-3 .u-text-3 {
+  font-weight: 700;
+  font-size: 3.75rem;
+  margin: 20px auto 0;
+}
+
+.u-section-3 .u-image-1 {
+  width: 138px;
+  height: 87px;
+  margin: -105px 171px 0 auto;
+}
+
+.u-section-3 .u-text-4 {
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin: 38px auto 0;
+}
+
+.u-section-3 .u-image-2 {
+  width: 291px;
+  height: 300px;
+  margin: -181px auto 0 11px;
+}
+
+.u-section-3 .u-image-3 {
+  width: 225px;
+  height: 225px;
+  margin: -193px 117px 48px auto;
+}
+
+@media (max-width: 1199px) {
+  .u-section-3 .u-sheet-1 {
+    min-height: 693px;
+  }
+}
+
+@media (max-width: 991px) {
+  .u-section-3 .u-sheet-1 {
+    min-height: 531px;
+  }
+}
+
+@media (max-width: 767px) {
+  .u-section-3 .u-sheet-1 {
+    min-height: 398px;
+  }
+}
+
+@media (max-width: 575px) {
+  .u-section-3 .u-sheet-1 {
+    min-height: 251px;
+  }
+
+  .u-section-3 .u-image-3 {
+    margin-right: 115px;
+  }
+}
