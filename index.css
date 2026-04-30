@@ -1,5 +1,5 @@
  .u-section-1 {
-  background-image: url("images/minecrafttitlescreen.jpg");
+  background-image: url("minecrafttitlescreen.jpg");
 }
 
 .u-section-1 .u-sheet-1 {
@@ -107,7 +107,7 @@
     width: 340px;
   }
 } .u-section-2 {
-  background-image: url("images/backgrounf.png");
+  background-image: url("backgrounf.png");
   background-position: 50% 50%;
   min-height: 971px;
 }
@@ -252,7 +252,7 @@
     margin-top: -193px;
   }
 } .u-section-3 {
-  background-image: url("images/minecraft-title-screen-house-12.jpg");
+  background-image: url("minecraft-title-screen-house-12.jpg");
   background-position: 50% 50%;
 }
 
