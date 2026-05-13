@@ -32,7 +32,7 @@ If you do not have pygame installed run this command in your terminal when you h
 pip install -r requirements.txt
 ```
 If this does not work for you you can follow these steps to download pygame 
-1. Use this link to download the 1.9.6 version of Pygame. 
+1. Use this link to download the 2.6.1 version of Pygame. 
 	https://www.pygame.org/download.shtml
 2. Open the zip file. 
 3. Inside you will find a file called setup. Open setup in vscode.
