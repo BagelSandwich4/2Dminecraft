@@ -33,8 +33,8 @@ FRIC = -0.4
 FPS = 60
 # telling pygame to set the caption to Minecraft 2D
 pygame.display.set_caption("Minecraft 2D")
-# telling pygame to set the mouse to invisible
-pygame.mouse.set_visible(False)
+# telling pygame to set the mouse to visible
+pygame.mouse.set_visible(True)
 # telling pygame to set the clock
 FramePerSec = pygame.time.Clock()
 # telling pygame we want to open a window
@@ -175,7 +175,7 @@ DRAGON = mob.Mob(
     (16, 6),
     DIAMOND_SWORD,
     40,
-    (1, 1),
+    (1, 1)
 )
 BLAZE = mob.Mob(
     "sprites\\other_sprites\\blaze.png",
@@ -183,7 +183,7 @@ BLAZE = mob.Mob(
     (2, 4),
     DIAMOND_SWORD,
     8,
-    (1, 1),
+    (1, 1)
 )
 
 # initializing hotbar
@@ -320,16 +320,18 @@ while True:
         (5, 1),
         HOTBAR,
     )
-    if random.randrange(0, 100, 1) < 10:
-        DRAGON.damage(P1, HOTBAR, BLAZE_ROD, True)
-        BLAZE.damage(P1, HOTBAR, BLAZE_ROD)
-    BLAZE_ROD.pick_up(HOTBAR, P1)
-
     # scrolling of screen
     scroll_x = int(P1.pos.x - (WIDTH / 2))
     scroll_y = 0
     if P1.pos.y > blocks_to_pixels.blocks_to_pixels(12):
         scroll_y = int(P1.pos.y - (HEIGHT / 2))
+    #adding scroll to cursor_pos
+    cursor_pos = (P1.cursor_pos[0] + scroll_x,P1.cursor_pos[1] + scroll_y)
+    
+    DRAGON.damage(P1, HOTBAR, BLAZE_ROD,cursor_pos,P1.mouse, True)
+    BLAZE.damage(P1, HOTBAR, BLAZE_ROD, cursor_pos, P1.mouse)
+    BLAZE_ROD.pick_up(HOTBAR, P1)
+
     displaysurface.blit(bg_image, (0, 0))
     # draws all the sprites
     for entity in all_sprites:

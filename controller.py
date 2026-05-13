@@ -50,6 +50,10 @@ class Controller(pygame.sprite.Sprite):
         self.acc = VEC(0, 0)
         # setting the players to visible
         self.visible = True
+        #initializing cursor location
+        self.cursor_pos = pygame.mouse.get_pos()
+        #initalizes mouse click
+        self.mouse = (False, False)
         # determining whether steve is touching a platform
         try:
             self.grounded = self.grounded
@@ -80,10 +84,13 @@ class Controller(pygame.sprite.Sprite):
         This is the controller. It tells 
         the model what to do when someone 
         presses a key and controlls physics of the player
+        as well as the postion of the cursor
         Inputs:
             hotbar - instance of the hotbar class
         """
         # controller
+        #obtaining cursor location
+        self.cursor_pos = pygame.mouse.get_pos()
         # constantly setting gravity as acceleration downwards
         if not self.grounded:
             self.acc = VEC(0, 0.5)
@@ -91,6 +98,9 @@ class Controller(pygame.sprite.Sprite):
             self.acc = VEC(0, 0)
         # storing pressed keys
         pressed_keys = pygame.key.get_pressed()
+        #stores whether the mouse was clicked
+        mouse_tuple = pygame.mouse.get_pressed()
+        self.mouse = (self.mouse[1], mouse_tuple[0])
         # storing the number keys pressed for use in the hotbar
         number_keys = [K_1, K_2, K_3, K_4, K_5, K_6, K_7, K_8, K_9]
         # tells the computer to move left

@@ -48,7 +48,7 @@ class Mob(pygame.sprite.Sprite):
         self.health_bar = health_bar.HealthBar(health_pos,health)
         self.life = True
 
-    def damage(self,player, hotbar,drop, end=False):
+    def damage(self,player, hotbar,drop, cursor_pos,click, end=False):
         '''
         This method takes an interactable and makes the drop item visible
           and turns the interactable either into the newimage or invisible
@@ -62,16 +62,24 @@ class Mob(pygame.sprite.Sprite):
             size - a tuple representing the
             x and y size of the newimage in blocks
             hotbar - instance of the hotbar class
+            cursor_pos - a tuple containing the position of the cursor in pixels
+            click - tuple with boolean logic saying whether the player hit left click old,new
             end - boolean logic of whether or not
             interacting with this ends the game
         '''
         #if you are holding the right item
         correct_held_item = self.requirement == hotbar.selected
-        #if there is health left and you are touching the mob
+        #ensuring you're cursor is over the mob
+        pos_in_mask = cursor_pos[0] - self.pos[0], cursor_pos[1] - self.pos[1]
+        mask_w, mask_h = self.mask.get_size()
+        touching = False
+        if 0 <= pos_in_mask[0] < mask_w and 0 <= pos_in_mask[1] < mask_h:
+            touching = bool(self.mask.get_at(pos_in_mask))
+        #boolean logic so the first click is the only one that deals damage
+        first_click = (click[1] and not click[0])
+        #if there is health left and you are touching the mob and holding the correct item
         if (self.health_bar.hp > 0 and correct_held_item
-            and self.mask.overlap(player.mask,
-            [int(player.pos.x - self.pos[0]),
-            int(player.pos.y - self.pos[1])])):
+            and touching and first_click):
             self.health_bar.damage(1)
         #death
         if self.health_bar.hp == 0 and self.life is True:
